@@ -496,7 +496,8 @@ startQuizBtn.onclick = () => {
     return;
   }
   const total = Math.max(5, Math.min(20, settings.questionsParSession || 10));
-  quizState = { total, n: 0, score: 0, items: [], errors: [] };
+  const hadDue = pool.some((x) => getNode(x.k).due <= todayStr());
+  quizState = { total, n: 0, score: 0, items: [], errors: [], hadDueAtStart: hadDue };
   quizBox.classList.remove('hidden');
   nextQuestion(pool);
 };
@@ -639,7 +640,12 @@ function renderTargetForm(p, v, t) {
 }
 
 function normalize(s) {
-  return s.replaceAll('’', "'").replace(/\s+/g, ' ').trim().toLowerCase();
+  return s
+    .replaceAll('’', "'")
+    .replace(/\bj\s+(?=[aeiouyh])/g, "j'") // j a... -> j'a...
+    .replace(/\s+/g, ' ')
+    .trim()
+    .toLowerCase();
 }
 
 // Met en évidence différence simple (longueur/char)
