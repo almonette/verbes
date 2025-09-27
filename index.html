@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Verbes — Pratique adaptative (10–11 ans)</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<header class="app-header">
+  <h1>Verbes</h1>
+  <div class="user-box">
+    <label>Prénom</label>
+    <input id="userName" type="text" placeholder="Ton prénom" />
+    <button id="saveUser" class="btn">OK</button>
+  </div>
+</header>
+
+<main class="container">
+  <nav class="tabs">
+    <button class="tab active" data-tab="dashboard">Tableau de bord</button>
+    <button class="tab" data-tab="quiz">Quiz adaptatif</button>
+    <button class="tab" data-tab="libre">Mode libre</button>
+    <button class="tab" data-tab="reglages">Réglages</button>
+  </nav>
+
+  <section id="dashboard" class="tab-panel active">
+    <div class="cards">
+      <div class="card">
+        <h2>À réviser aujourd’hui</h2>
+        <p id="dueCount">—</p>
+        <div id="dueList"></div>
+      </div>
+      <div class="card">
+        <h2>Dernière session</h2>
+        <p id="lastScore">—</p>
+        <div id="lastErrors"></div>
+      </div>
+      <div class="card">
+        <h2>Badges</h2>
+        <ul id="badges" class="badges">
+          <!-- dynamisé -->
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="quiz" class="tab-panel">
+    <div class="panel">
+      <div class="row">
+        <div class="grow">
+          <h2>Quiz (10 questions)</h2>
+          <p class="sub">Questions tirées selon tes besoins (adaptatif).</p>
+        </div>
+        <div>
+          <button id="startQuiz" class="btn primary">Démarrer</button>
+        </div>
+      </div>
+
+      <div id="quizBox" class="quiz-box hidden">
+        <div class="question">
+          <div id="qProgress" class="progress"></div>
+          <div class="qline">
+            <span id="qSujet" class="pill"></span>
+            <span id="qVerbe" class="pill"></span>
+            <span id="qTemps" class="pill"></span>
+          </div>
+          <label for="qInput">Ta réponse :</label>
+          <input id="qInput" type="text" autocomplete="off" placeholder="ex. nous aimons" />
+          <button id="qSubmit" class="btn primary">Valider</button>
+          <div id="qFeedback" class="feedback"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="libre" class="tab-panel">
+    <div class="panel">
+      <h2>Mode libre</h2>
+      <div class="row wrap gap">
+        <div>
+          <label>Verbe</label>
+          <select id="libreVerbe"></select>
+        </div>
+        <div>
+          <label>Temps</label>
+          <select id="libreTemps"></select>
+        </div>
+        <div class="row align-end">
+          <button id="libreLoad" class="btn">Charger</button>
+        </div>
+      </div>
+
+      <div id="libreGrid" class="grid-2 hidden">
+        <div>
+          <h3>Tu écris</h3>
+          <div class="table-like">
+            <div class="row"><span>je / j’</span><input data-p="1s" /></div>
+            <div class="row"><span>tu</span><input data-p="2s" /></div>
+            <div class="row"><span>il/elle</span><input data-p="3s" /></div>
+            <div class="row"><span>nous</span><input data-p="1p" /></div>
+            <div class="row"><span>vous</span><input data-p="2p" /></div>
+            <div class="row"><span>ils/elles</span><input data-p="3p" /></div>
+          </div>
+          <button id="libreCheck" class="btn primary">Vérifier</button>
+          <div id="libreFeedback" class="feedback"></div>
+        </div>
+        <div>
+          <h3>Correction</h3>
+          <div id="libreCorrection" class="table-like"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="reglages" class="tab-panel">
+    <div class="panel">
+      <h2>Réglages</h2>
+      <div class="row wrap gap">
+        <div>
+          <label>Verbes actifs</label>
+          <div id="verbsChecks" class="checks"></div>
+        </div>
+        <div>
+          <label>Temps actifs</label>
+          <div id="tensesChecks" class="checks"></div>
+        </div>
+        <div>
+          <label>Questions par session</label>
+          <input id="qCount" type="number" min="5" max="20" value="10"/>
+        </div>
+      </div>
+      <div class="row gap">
+        <button id="saveSettings" class="btn primary">Enregistrer</button>
+        <button id="resetProgress" class="btn danger">Réinitialiser la progression</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="app-footer">
+  <small>© 2025 Verbes (POC éducatif) — Données locales uniquement</small>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>

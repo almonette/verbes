@@ -1,0 +1,18 @@
+{
+  "verbes_settings_v1": {
+    "verbesActifs": ["être","avoir","aller","finir","aimer", "ouvrir","partir","tenir","manger","commencer"],
+    "tempsActifs": ["présent","imparfait","futur simple","conditionnel présent"],
+    "questionsParSession": 10,
+    "mode": "quiz" 
+  },
+  "verbes_progress_v1": {
+    "aller|imparfait|2|p": {
+      "streak": 0, "ease": 2.5, "interval": 0,
+      "due": "2025-09-27", "weight": 3, "history":[{"d":"2025-09-20","ok":false}]
+    },
+    "...": { }
+  },
+  "verbes_user_v1": {
+    "pseudo": "Zoé", "theme": "clair", "dernierLogin": "2025-09-27T10:00:00Z"
+  }
+}
