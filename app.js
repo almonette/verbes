@@ -243,7 +243,19 @@ tabs.forEach((btn) => {
     tabs.forEach((b) => b.classList.remove('active'));
     panels.forEach((p) => p.classList.remove('active'));
     btn.classList.add('active');
-    document.getElementById(btn.dataset.tab).classList.add('active');
+    const panel = document.getElementById(btn.dataset.tab);
+    panel.classList.add('active');
+    if (btn.dataset.tab === 'rapport') {
+      renderReport();
+      const incZeros = document.getElementById('rDetailsAll')?.checked || false;
+      renderDetails(incZeros);
+      const rDetailsAll = document.getElementById('rDetailsAll');
+      if (rDetailsAll) {
+        rDetailsAll.addEventListener('change', (e) => {
+          renderDetails(!!e.target.checked);
+        });
+      }
+    }
   });
 });
 
@@ -403,11 +415,196 @@ function updateDashboard() {
       const div = document.createElement('div');
       div.textContent = `${e.sujet} ${e.verbe} (${e.temps}) → ${e.correct}`;
       le.appendChild(div);
-      renderBadges();
     });
   }
+  renderBadges();
 }
 updateDashboard();
+
+// ======= Analytics / Rapport =======
+
+function parseKey(k) {
+  // v|t|pers|nb => {v,t,code:"1s/2p/..."}
+  const [v, t, p, nb] = k.split('|');
+  return { v, t, code: `${p}${nb}` };
+}
+function labelFromCode(code) {
+  return PERSONNES.find((x) => x.code === code)?.label || code;
+}
+function attemptsForKey(k, days = null, createIfMissing = true) {
+  const n = createIfMissing ? getNode(k) : peekNode(k);
+  const hist = n?.history || [];
+  let arr = hist;
+  if (days) {
+    const cut = new Date();
+    cut.setDate(cut.getDate() - days);
+    const cs = cut.toISOString().slice(0, 10);
+    arr = hist.filter((h) => h.d >= cs);
+  }
+  const attempts = arr.length;
+  const corrects = arr.filter((h) => h.ok).length;
+  const errors = attempts - corrects;
+  const rate = attempts ? corrects / attempts : null;
+  return {
+    attempts,
+    corrects,
+    errors,
+    rate,
+    streak: n?.streak || 0,
+    ease: n?.ease || 2.5,
+    interval: n?.interval || 0,
+    due: n?.due || todayStr(),
+  };
+}
+
+// Enumère toutes les cartes actives (verbes/temps/personnes) sans toucher au storage
+function enumerateAllActiveKeys() {
+  const keys = [];
+  settings.verbesActifs.forEach((v) => {
+    if (!CONJ[v]) return;
+    settings.tempsActifs.forEach((t) => {
+      if (!CONJ[v][t]) return;
+      PERSONNES.forEach((p) => {
+        keys.push(keyOf(v, t, p.code));
+      });
+    });
+  });
+  return keys;
+}
+
+function rateColor(rate) {
+  if (rate === null) return '#334155'; // gris
+  if (rate < 0.6) return '#f87171'; // rouge
+  if (rate < 0.8) return '#fbbf24'; // orange
+  return '#22c55e'; // vert
+}
+function pct(n) {
+  return n == null ? '—' : Math.round(n * 100) + '%';
+}
+
+function computeAnalytics() {
+  const keys = Object.keys(progress || {});
+  const today = todayStr();
+
+  // Globaux
+  let G_attempts = 0,
+    G_corrects = 0;
+  let dueToday = 0;
+
+  // Détails par clé
+  const details = [];
+  for (const k of keys) {
+    const a = attemptsForKey(k);
+    const d = parseKey(k);
+    G_attempts += a.attempts;
+    G_corrects += a.corrects;
+    if (a.due <= today) dueToday++;
+    details.push({ key: k, ...d, ...a });
+  }
+
+  const globalRate = G_attempts ? G_corrects / G_attempts : null;
+
+  // Règles de tri / sélection
+  const isWeak = (x) => x.attempts >= 3 && (x.rate === null || x.rate < 0.8);
+  const isMastered = (x) =>
+    x.attempts >= 5 && x.rate !== null && x.rate >= 0.9 && x.streak >= 3 && x.interval >= 3;
+
+  const weaknesses = details
+    .filter(isWeak)
+    .sort((a, b) => (a.rate ?? 0) - (b.rate ?? 0))
+    .slice(0, 10);
+  const mastered = details
+    .filter(isMastered)
+    .sort((a, b) => {
+      if (b.streak !== a.streak) return b.streak - a.streak;
+      if ((b.rate ?? 0) !== (a.rate ?? 0)) return (b.rate ?? 0) - (a.rate ?? 0);
+      return b.attempts - a.attempts;
+    })
+    .slice(0, 10);
+
+  // Vue par verbe
+  const perVerb = new Map();
+  for (const d of details) {
+    if (!perVerb.has(d.v)) perVerb.set(d.v, { verb: d.v, attempts: 0, corrects: 0 });
+    const acc = perVerb.get(d.v);
+    acc.attempts += d.attempts;
+    acc.corrects += d.corrects;
+  }
+  const byVerb = [...perVerb.values()]
+    .map((x) => {
+      const rate = x.attempts ? x.corrects / x.attempts : null;
+      return { verb: x.verb, attempts: x.attempts, rate };
+    })
+    .sort((a, b) => (a.rate ?? 0) - (b.rate ?? 0)); // du plus faible au plus fort
+
+  return {
+    globalRate,
+    attempts: G_attempts,
+    corrects: G_corrects,
+    dueToday,
+    weakCount: details.filter(isWeak).length,
+    masteredCount: details.filter(isMastered).length,
+    weaknesses,
+    mastered,
+    byVerb,
+  };
+}
+
+function rowHTML(label, rate, attempts, extraRight = '') {
+  const w = rate == null ? 0 : Math.max(0, Math.min(100, Math.round(rate * 100)));
+  const color = rateColor(rate);
+  return `
+    <div class="row-line">
+      <div><span class="tag">${label}</span></div>
+      <div>${pct(rate)}</div>
+      <div class="meter" title="${attempts} essais">
+        <span style="width:${w}%;background:${color}"></span>
+      </div>
+      <div>${attempts} ess.</div>
+    </div>
+  `;
+}
+
+function renderReport() {
+  const a = computeAnalytics();
+
+  // KPIs
+  document.getElementById('rGlobalRate').textContent = pct(a.globalRate);
+  document.getElementById('rGlobalAttempts').textContent = `${a.attempts} essais`;
+  document.getElementById('rMasteredCount').textContent = a.masteredCount;
+  document.getElementById('rMasteredHint').textContent =
+    '≥90% de réussite, streak ≥3, intervalle ≥3';
+  document.getElementById('rWeakCount').textContent = a.weakCount;
+  document.getElementById('rWeakHint').textContent = '≥3 essais et <80%';
+  document.getElementById('rDueToday').textContent = a.dueToday;
+
+  // Faiblesses (Top 10)
+  const weakEl = document.getElementById('rWeak');
+  weakEl.innerHTML = a.weaknesses.length
+    ? a.weaknesses
+        .map((x) => rowHTML(`${x.v} — ${x.t} — ${labelFromCode(x.code)}`, x.rate, x.attempts))
+        .join('')
+    : `<div class="row-line"><div>Aucune faiblesse détectée 🎉</div></div>`;
+
+  // Maîtrisés (Top 10)
+  const mastEl = document.getElementById('rMastered');
+  mastEl.innerHTML = a.mastered.length
+    ? a.mastered
+        .map((x) => rowHTML(`${x.v} — ${x.t} — ${labelFromCode(x.code)}`, x.rate, x.attempts))
+        .join('')
+    : `<div class="row-line"><div>Pas encore de cartes “maîtrisées” — ça s’en vient !</div></div>`;
+
+  // Vue d’ensemble par verbe
+  const ovEl = document.getElementById('rOverview');
+  const anyVerbData = a.byVerb.some((v) => v.attempts > 0);
+  ovEl.innerHTML = anyVerbData
+    ? a.byVerb.map((v) => rowHTML(v.verb, v.rate, v.attempts)).join('')
+    : `<div class="row-line"><div>Aucune donnée — lance un quiz pour remplir le rapport.</div></div>`;
+}
+
+function peekNode(k) {
+  return progress && progress[k] ? progress[k] : null;
+}
 
 // ======= Mode Libre =======
 const libreVerbe = document.getElementById('libreVerbe');
@@ -475,6 +672,53 @@ document.getElementById('libreCheck').onclick = () => {
 
   updateDashboard();
 };
+
+function rowDetailHTML(label, succ, fail, attempts, rate) {
+  const w = rate == null ? 0 : Math.max(0, Math.min(100, Math.round(rate * 100)));
+  const color = rateColor(rate);
+  return `
+    <div class="row-detail">
+      <div><span class="tag">${label}</span></div>
+      <div class="count-ok">${succ}</div>
+      <div class="count-ko">${fail}</div>
+      <div>${attempts}</div>
+      <div class="meter" title="${attempts} essais">
+        <span style="width:${w}%;background:${color}"></span>
+      </div>
+      <div>${pct(rate)}</div>
+    </div>
+  `;
+}
+
+function renderDetails(includeZeros) {
+  // Choix des clés
+  const keys = includeZeros ? enumerateAllActiveKeys() : Object.keys(progress || {});
+
+  // Construit les lignes
+  const rows = keys.map((k) => {
+    const a = attemptsForKey(k, null, /*createIfMissing*/ !includeZeros);
+    const d = parseKey(k);
+    const label = `${d.v} — ${d.t} — ${labelFromCode(d.code)}`;
+    return { label, ...a, key: k };
+  });
+
+  // Tri : d’abord par nombre d’échecs desc, puis par total desc, puis alpha
+  rows.sort((x, y) => {
+    if (y.errors !== x.errors) return y.errors - x.errors;
+    if (y.attempts !== x.attempts) return y.attempts - x.attempts;
+    return x.label.localeCompare(y.label, 'fr');
+  });
+
+  // Rendu
+  const root = document.getElementById('rDetails');
+  if (!rows.length) {
+    root.innerHTML = `<div class="row-detail"><div>Aucune donnée à afficher.</div></div>`;
+    return;
+  }
+  root.innerHTML = rows
+    .map((r) => rowDetailHTML(r.label, r.corrects, r.errors, r.attempts, r.rate))
+    .join('');
+}
 
 // ======= Quiz =======
 const startQuizBtn = document.getElementById('startQuiz');
@@ -552,11 +796,11 @@ function validateCurrent() {
       correct,
     });
     qNext.style.display = 'inline-block';
+    qNext.onclick = () => {
+      qNext.style.display = 'none';
+      nextQuestion(buildPool().filter((x) => CONJ[x.v] && CONJ[x.v][x.t]));
+    };
   }
-  qNext.onclick = () => {
-    qNext.style.display = 'none';
-    nextQuestion(buildPool().filter((x) => CONJ[x.v] && CONJ[x.v][x.t]));
-  };
   saveLS(LS_KEYS.progress, progress);
 }
 
@@ -599,6 +843,11 @@ function endQuiz() {
   }
 
   updateDashboard();
+  if (document.getElementById('rapport').classList.contains('active')) {
+    renderReport();
+    const incZeros = document.getElementById('rDetailsAll')?.checked || false;
+    renderDetails(incZeros);
+  }
 }
 
 function setProgress(ratio) {

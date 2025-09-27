@@ -21,6 +21,7 @@
         <button class="tab active" data-tab="dashboard">Tableau de bord</button>
         <button class="tab" data-tab="quiz">Quiz adaptatif</button>
         <button class="tab" data-tab="libre">Mode libre</button>
+        <button class="tab" data-tab="rapport">Rapport</button>
         <button class="tab" data-tab="reglages">Réglages</button>
       </nav>
 
@@ -111,6 +112,72 @@
               <div id="libreCorrection" class="table-like"></div>
             </div>
           </div>
+        </div>
+      </section>
+
+      <section id="rapport" class="tab-panel">
+        <div class="panel">
+          <h2>Rapport</h2>
+
+          <div class="cards kpi-cards">
+            <div class="card kpi">
+              <div class="kpi-label">Taux de réussite</div>
+              <div class="kpi-value" id="rGlobalRate">—</div>
+              <div class="kpi-sub" id="rGlobalAttempts">—</div>
+            </div>
+            <div class="card kpi">
+              <div class="kpi-label">Cartes maîtrisées</div>
+              <div class="kpi-value ok" id="rMasteredCount">—</div>
+              <div class="kpi-sub" id="rMasteredHint">—</div>
+            </div>
+            <div class="card kpi">
+              <div class="kpi-label">Cartes faibles</div>
+              <div class="kpi-value warn" id="rWeakCount">—</div>
+              <div class="kpi-sub" id="rWeakHint">—</div>
+            </div>
+            <div class="card kpi">
+              <div class="kpi-label">Révisions dues aujourd’hui</div>
+              <div class="kpi-value" id="rDueToday">—</div>
+              <div class="kpi-sub">cartes à revoir</div>
+            </div>
+          </div>
+
+          <div class="row wrap gap">
+            <div class="card flex1">
+              <h3>Faiblesses (Top 10)</h3>
+              <div id="rWeak" class="list-rows"></div>
+            </div>
+            <div class="card flex1">
+              <h3>Maîtrisés (Top 10)</h3>
+              <div id="rMastered" class="list-rows"></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>Vue d’ensemble par verbe</h3>
+            <div id="rOverview" class="list-rows"></div>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Détail par carte</h3>
+          <div class="row gap" style="margin-bottom: 10px">
+            <label class="row gap" style="font-size: 12px; color: var(--muted)">
+              <input type="checkbox" id="rDetailsAll" />
+              Afficher aussi les cartes sans essais
+            </label>
+          </div>
+
+          <!-- En-tête -->
+          <div class="row-detail" style="opacity: 0.7; font-size: 12px">
+            <div>Carte (verbe — temps — personne)</div>
+            <div>Succès</div>
+            <div>Échecs</div>
+            <div>Total</div>
+            <div>Progression</div>
+            <div>Taux</div>
+          </div>
+
+          <div id="rDetails" class="list-rows" style="margin-top: 8px"></div>
         </div>
       </section>
 
