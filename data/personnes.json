@@ -1,0 +1,8 @@
+[
+  { "code": "1s", "label": "je / j’", "sujet": "je" },
+  { "code": "2s", "label": "tu", "sujet": "tu" },
+  { "code": "3s", "label": "il/elle", "sujet": "il" },
+  { "code": "1p", "label": "nous", "sujet": "nous" },
+  { "code": "2p", "label": "vous", "sujet": "vous" },
+  { "code": "3p", "label": "ils/elles", "sujet": "ils" }
+]

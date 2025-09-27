@@ -137,6 +137,13 @@ select {
   gap: 12px;
   align-items: center;
 }
+
+.col {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
 .wrap {
   flex-wrap: wrap;
 }
