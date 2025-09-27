@@ -1,6 +1,7 @@
 /* ============================================================================
    Verbes — app.js (POC éducatif 10–11 ans)
    - Initialisation robuste (JSON → state → DOM → rendu)
+   - Profils par prénom (namespacing localStorage)
    - Adaptation (spaced repetition simplifiée)
    - Quiz, Mode libre, Rapport + Détails
    ============================================================================ */
@@ -11,7 +12,6 @@
   /* =========================
    * 0) Constantes & Helpers
    * ========================= */
-
   const LS_KEYS = {
     settings: 'verbes_settings_v1',
     progress: 'verbes_progress_v1',
@@ -20,7 +20,6 @@
     badges: 'verbes_badges_v1',
     streak: 'verbes_streak_v1',
   };
-
   const nowISO = () => new Date().toISOString();
   const todayStr = () => new Date().toISOString().slice(0, 10);
   const $id = (id) => document.getElementById(id);
@@ -37,50 +36,77 @@
   }
 
   /* =========================
-   * 1) Données & État global
+   * 1) Profils (namespacing LS)
    * ========================= */
+  let PROFILE_ID = loadLS('verbes_profile_id_v1', 'default');
 
-  // Données externes (chargées via JSON)
+  function sanitizeId(name) {
+    const s = (name || 'default')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .slice(0, 32);
+    return s || 'default';
+  }
+  function keyWithProfile(base) {
+    return `${base}__${PROFILE_ID}`;
+  }
+  function loadP(base, fallback) {
+    return loadLS(keyWithProfile(base), fallback);
+  }
+  function saveP(base, obj) {
+    saveLS(keyWithProfile(base), obj);
+  }
+
+  // État de profil (chargé lors d'un switch)
+  let settings; // dépend des JSON
+  let progress = {}; // init dans loadProfileState()
+
+  function getDefaultSettings() {
+    return {
+      verbesActifs: Object.keys(CONJ),
+      tempsActifs: TEMPS.slice(),
+      questionsParSession: 10,
+      mode: 'quiz',
+    };
+  }
+  function loadProfileState() {
+    settings = loadP(LS_KEYS.settings, getDefaultSettings());
+    progress = loadP(LS_KEYS.progress, {});
+  }
+  function switchProfile(name) {
+    PROFILE_ID = sanitizeId(name);
+    saveLS('verbes_profile_id_v1', PROFILE_ID);
+    loadProfileState(); // recharge settings/progress du profil
+    renderSettings(); // nécessite DOM prêt
+    fillSelects(); // idem
+    updateDashboard(); // idem
+  }
+
+  /* =========================
+   * 2) Données globales & utilisateur
+   * ========================= */
+  // Données externes (JSON)
   let PERSONNES = [];
   let TEMPS = [];
   let CONJ = {};
 
-  // État persistant
-  let settings; // initialisé après chargement JSON
-  let progress = loadLS(LS_KEYS.progress, {});
+  // Données utilisateur simple (prénom)
   let user = loadLS(LS_KEYS.user, { pseudo: '', theme: 'sombre', dernierLogin: nowISO() });
 
-  // DOM refs (assignées dans initDOM)
-  let tabs, panels;
-  let userNameEl, saveUserBtn;
-
-  let verbsChecks, tensesChecks, qCountEl, saveSettingsBtn, resetProgressBtn;
-
-  let startQuizBtn, quizBox, qInput, qSubmit, qNext, qFeedback, qProgress, qSujet, qVerbe, qTemps;
-  let libreVerbeSel, libreTempsSel, libreLoadBtn, libreCheckBtn;
-
-  // Rapport — toggle binding guard
-  let detailsToggleBound = false;
-
-  // get defaults après JSON
-  const getDefaultSettings = () => ({
-    verbesActifs: Object.keys(CONJ),
-    tempsActifs: TEMPS.slice(),
-    questionsParSession: 10,
-    mode: 'quiz',
-  });
-
   /* =========================
-   * 2) Initialisation
+   * 3) Bootstrap (ordre sûr)
    * ========================= */
-
   document.addEventListener('DOMContentLoaded', bootstrap);
 
   async function bootstrap() {
-    await initData(); // charge JSON ou fallback
-    initState(); // settings basés sur données
-    initDOM(); // query + events
-    initialRender(); // settings + selects + dashboard
+    await initData(); // charge JSON (ou fallback)
+    initDOM(); // récupère toutes les refs DOM + events
+    loadProfileState(); // crée settings/progress basés sur JSON
+    renderSettings(); // premier rendu maintenant que tout est prêt
+    fillSelects();
+    updateDashboard();
+    // démarre sur le profil mémorisé (met juste à jour la vue si pseudo existant)
+    if (user.pseudo) switchProfile(user.pseudo);
   }
 
   async function initData() {
@@ -152,9 +178,15 @@
     }
   }
 
-  function initState() {
-    settings = loadLS(LS_KEYS.settings, getDefaultSettings());
-  }
+  /* =========================
+   * 4) DOM refs & Events (aucun rendu ici)
+   * ========================= */
+  let tabs, panels;
+  let userNameEl, saveUserBtn;
+  let verbsChecks, tensesChecks, qCountEl, saveSettingsBtn, resetProgressBtn;
+  let startQuizBtn, quizBox, qInput, qSubmit, qNext, qFeedback, qProgress, qSujet, qVerbe, qTemps;
+  let libreVerbeSel, libreTempsSel, libreLoadBtn, libreCheckBtn;
+  let detailsToggleBound = false;
 
   function initDOM() {
     // Tabs
@@ -174,9 +206,7 @@
           if (!detailsToggleBound) {
             const rDetailsAll = $id('rDetailsAll');
             if (rDetailsAll) {
-              rDetailsAll.addEventListener('change', (e) => {
-                renderDetails(!!e.target.checked);
-              });
+              rDetailsAll.addEventListener('change', (e) => renderDetails(!!e.target.checked));
               detailsToggleBound = true;
             }
           }
@@ -189,10 +219,12 @@
     saveUserBtn = $id('saveUser');
     userNameEl.value = user.pseudo || '';
     saveUserBtn.onclick = () => {
-      user.pseudo = userNameEl.value.trim();
+      const name = userNameEl.value.trim();
+      user.pseudo = name;
       user.dernierLogin = nowISO();
       saveLS(LS_KEYS.user, user);
-      alert('Bonjour ' + (user.pseudo || '👋') + ' !');
+      switchProfile(name); // charge/affiche ce profil
+      alert('Profil chargé pour ' + (name || '👋'));
     };
 
     // Réglages
@@ -207,16 +239,15 @@
         5,
         Math.min(20, parseInt(qCountEl.value || '10', 10))
       );
-      saveLS(LS_KEYS.settings, settings);
+      saveP(LS_KEYS.settings, settings);
       fillSelects();
       ensureLibreSelectionValid();
       alert('Réglages enregistrés !');
     };
-
     resetProgressBtn.onclick = () => {
       if (confirm('Réinitialiser toute la progression ?')) {
         progress = {};
-        saveLS(LS_KEYS.progress, progress);
+        saveP(LS_KEYS.progress, progress);
         updateDashboard();
       }
     };
@@ -252,17 +283,14 @@
           .toLowerCase();
         const correctVerb = getVerbFormOnly(v, t, p.code);
         const ok = normalize(inp) === normalize(correctVerb);
-
         updateOnAnswer(keyOf(v, t, p.code), ok);
-
-        const fullTarget = renderTargetForm(p, v, t); // “je suis”, “tu es”, …
+        const fullTarget = renderTargetForm(p, v, t);
         return { p, inp, correctVerb, fullTarget, ok };
       });
 
       const okCount = rows.filter((r) => r.ok).length;
       feedback.className = 'feedback ' + (okCount === 6 ? 'ok' : 'ko');
       feedback.textContent = okCount === 6 ? 'Parfait !' : `Réponses correctes : ${okCount}/6`;
-
       corrBox.innerHTML = rows
         .map(
           (r) =>
@@ -273,7 +301,6 @@
          </div>`
         )
         .join('');
-
       updateDashboard();
     };
 
@@ -305,22 +332,14 @@
     };
   }
 
-  function initialRender() {
-    renderSettings();
-    fillSelects();
-    updateDashboard();
-  }
-
   /* =========================
-   * 3) Adaptation & Progress
+   * 5) Adaptation & Progress
    * ========================= */
-
   function keyOf(v, t, pc) {
     const nb = pc.endsWith('p') ? 'p' : 's';
     const pers = pc[0];
     return `${v}|${t}|${pers}|${nb}`;
   }
-
   function getNode(k) {
     if (!progress[k]) {
       progress[k] = { streak: 0, ease: 2.5, interval: 0, due: todayStr(), weight: 2, history: [] };
@@ -350,7 +369,7 @@
     n.due = due.toISOString().slice(0, 10);
     n.history.push({ d: todayStr(), ok });
     progress[k] = n;
-    saveLS(LS_KEYS.progress, progress);
+    saveP(LS_KEYS.progress, progress);
   }
 
   function buildPool() {
@@ -372,7 +391,6 @@
     });
     return pool;
   }
-
   function weightedPick(items) {
     const sum = items.reduce((s, it) => s + it.w, 0);
     let r = Math.random() * sum;
@@ -383,9 +401,8 @@
   }
 
   /* =========================
-   * 4) UI — Réglages/Dashboard
+   * 6) UI — Réglages/Dashboard
    * ========================= */
-
   function renderSettings() {
     // Verbes
     verbsChecks.innerHTML = '';
@@ -402,7 +419,7 @@
         } else {
           settings.verbesActifs = settings.verbesActifs.filter((x) => x !== v);
         }
-        saveLS(LS_KEYS.settings, settings);
+        saveP(LS_KEYS.settings, settings);
         fillSelects();
         ensureLibreSelectionValid();
       };
@@ -423,7 +440,7 @@
         } else {
           settings.tempsActifs = settings.tempsActifs.filter((x) => x !== t);
         }
-        saveLS(LS_KEYS.settings, settings);
+        saveP(LS_KEYS.settings, settings);
         fillSelects();
         ensureLibreSelectionValid();
       };
@@ -446,7 +463,7 @@
       dueList.appendChild(el);
     });
 
-    const last = loadLS(LS_KEYS.last, null);
+    const last = loadP(LS_KEYS.last, null);
     $id('lastScore').textContent = last ? `${last.score}/${last.total}` : '—';
     const le = $id('lastErrors');
     le.innerHTML = '';
@@ -460,32 +477,25 @@
     renderBadges();
   }
 
-  /* =========================
-   * 5) UI — Mode libre
-   * ========================= */
-
+  // Mode libre — selects filtrés par réglages
   function fillSelects() {
     const prevVerb = libreVerbeSel.value;
     const prevTemps = libreTempsSel.value;
-
     const verbs = settings.verbesActifs.filter((v) => CONJ[v]);
     const tenses = settings.tempsActifs.slice();
 
     libreVerbeSel.innerHTML = verbs.map((v) => `<option>${v}</option>`).join('');
     libreTempsSel.innerHTML = tenses.map((t) => `<option>${t}</option>`).join('');
 
-    // préserver la sélection quand c’est possible
     if (verbs.includes(prevVerb)) libreVerbeSel.value = prevVerb;
     if (tenses.includes(prevTemps)) libreTempsSel.value = prevTemps;
 
-    // désactiver/masquer si plus rien d’actif
     const none = verbs.length === 0 || tenses.length === 0;
     libreVerbeSel.disabled = verbs.length === 0;
     libreTempsSel.disabled = tenses.length === 0;
     libreLoadBtn.disabled = none;
     if (none) $id('libreGrid').classList.add('hidden');
   }
-
   function ensureLibreSelectionValid() {
     if (!settings.verbesActifs.includes(libreVerbeSel.value)) {
       libreVerbeSel.value = settings.verbesActifs.find((v) => CONJ[v]) || '';
@@ -493,16 +503,14 @@
     if (!settings.tempsActifs.includes(libreTempsSel.value)) {
       libreTempsSel.value = settings.tempsActifs[0] || '';
     }
-    // si plus de choix valides, on cache la grille
     if (!libreVerbeSel.value || !libreTempsSel.value) {
       $id('libreGrid').classList.add('hidden');
     }
   }
 
   /* =========================
-   * 6) UI — Quiz
+   * 7) UI — Quiz
    * ========================= */
-
   let quizState = null;
 
   function nextQuestion(pool) {
@@ -554,32 +562,31 @@
         nextQuestion(buildPool().filter((x) => CONJ[x.v] && CONJ[x.v][x.t]));
       };
     }
-    saveLS(LS_KEYS.progress, progress);
+    saveP(LS_KEYS.progress, progress);
   }
 
   function endQuiz() {
     setProgress(1);
     qFeedback.className = 'feedback';
     qFeedback.innerHTML = `Session terminée — score <b>${quizState.score}/${quizState.total}</b>`;
-    saveLS(LS_KEYS.last, {
+    saveP(LS_KEYS.last, {
       score: quizState.score,
       total: quizState.total,
       when: nowISO(),
       errors: quizState.errors,
     });
 
-    // Badges
     if (quizState.score === quizState.total) awardBadge('perfect');
 
     const today = todayStr();
-    const streak = loadLS(LS_KEYS.streak, { lastDay: null, count: 0 });
+    const streak = loadP(LS_KEYS.streak, { lastDay: null, count: 0 });
     if (streak.lastDay !== today) {
       const y = new Date(today);
       y.setDate(y.getDate() - 1);
       const ystr = y.toISOString().slice(0, 10);
       streak.count = streak.lastDay === ystr ? streak.count + 1 : 1;
       streak.lastDay = today;
-      saveLS(LS_KEYS.streak, streak);
+      saveP(LS_KEYS.streak, streak);
     }
     if (streak.count >= 3) awardBadge('streak3');
     if (quizState.hadDueAtStart) awardBadge('ontime');
@@ -604,14 +611,13 @@
   }
 
   /* =========================
-   * 7) Rapport & Détails
+   * 8) Rapport & Détails
    * ========================= */
-
   function getBadges() {
-    return loadLS(LS_KEYS.badges, []);
+    return loadP(LS_KEYS.badges, []);
   }
   function saveBadges(b) {
-    saveLS(LS_KEYS.badges, b);
+    saveP(LS_KEYS.badges, b);
   }
   function awardBadge(id) {
     const b = new Set(getBadges());
@@ -666,7 +672,6 @@
       due: n?.due || todayStr(),
     };
   }
-
   function enumerateAllActiveKeys() {
     const keys = [];
     settings.verbesActifs.forEach((v) => {
@@ -678,7 +683,6 @@
     });
     return keys;
   }
-
   function rateColor(rate) {
     if (rate === null) return '#334155';
     if (rate < 0.6) return '#f87171';
@@ -695,7 +699,6 @@
     let G_attempts = 0,
       G_corrects = 0,
       dueToday = 0;
-
     const details = [];
     for (const k of keys) {
       const a = attemptsForKey(k);
@@ -705,7 +708,6 @@
       if (a.due <= today) dueToday++;
       details.push({ key: k, ...d, ...a });
     }
-
     const globalRate = G_attempts ? G_corrects / G_attempts : null;
     const isWeak = (x) => x.attempts >= 3 && (x.rate === null || x.rate < 0.8);
     const isMastered = (x) =>
@@ -732,11 +734,10 @@
       acc.corrects += d.corrects;
     }
     const byVerb = [...perVerb.values()]
-      .map((x) => ({
-        verb: x.verb,
-        attempts: x.attempts,
-        rate: x.attempts ? x.corrects / x.attempts : null,
-      }))
+      .map((x) => {
+        const rate = x.attempts ? x.corrects / x.attempts : null;
+        return { verb: x.verb, attempts: x.attempts, rate };
+      })
       .sort((a, b) => (a.rate ?? 0) - (b.rate ?? 0)); // du plus faible au plus fort
 
     return {
@@ -763,10 +764,8 @@
           <span style="width:${w}%;background:${color}"></span>
         </div>
         <div>${attempts} ess.</div>
-      </div>
-    `;
+      </div>`;
   }
-
   function rowDetailHTML(label, succ, fail, attempts, rate) {
     const w = rate == null ? 0 : Math.max(0, Math.min(100, Math.round(rate * 100)));
     const color = rateColor(rate);
@@ -780,13 +779,11 @@
           <span style="width:${w}%;background:${color}"></span>
         </div>
         <div>${pct(rate)}</div>
-      </div>
-    `;
+      </div>`;
   }
 
   function renderReport() {
     const a = computeAnalytics();
-
     $id('rGlobalRate').textContent = pct(a.globalRate);
     $id('rGlobalAttempts').textContent = `${a.attempts} essais`;
     $id('rMasteredCount').textContent = a.masteredCount;
@@ -842,9 +839,8 @@
   }
 
   /* =========================
-   * 8) Conjugaison & Utils
+   * 9) Conjugaison & Utils
    * ========================= */
-
   function getVerbFormOnly(v, t, pCode) {
     return CONJ[v]?.[t]?.[pCode] || '';
   }
@@ -853,18 +849,11 @@
     const sujet = p.sujet;
     const forme = CONJ[v]?.[t]?.[p.code];
     if (!forme) return sujet + ' (?)';
-
-    const needsElision = (s) => {
-      const c = s[0];
-      return 'aeiouyh'.includes(c);
-    };
-
+    const needsElision = (s) => 'aeiouyh'.includes(s[0]);
     if (sujet === 'je' && needsElision(forme)) {
-      // pas d’espace entre j’ et le verbe
       return `j’${forme}`;
-    } else {
-      return `${sujet} ${forme}`.trim();
     }
+    return `${sujet} ${forme}`.trim();
   }
 
   function normalize(s) {
@@ -883,13 +872,12 @@
     let out = '';
     const len = Math.max(g.length, c.length);
     for (let i = 0; i < len; i++) {
-      const a = g[i] ?? '';
-      const b = c[i] ?? '';
-      if (a === b) out += a;
-      else
-        out += `<span style="background:#3f1d1d;border-radius:4px;padding:0 2px">${
-          a || '•'
-        }</span>`;
+      const a = g[i] ?? '',
+        b = c[i] ?? '';
+      out +=
+        a === b
+          ? a
+          : `<span style="background:#3f1d1d;border-radius:4px;padding:0 2px">${a || '•'}</span>`;
     }
     return out || '—';
   }
