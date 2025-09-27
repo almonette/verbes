@@ -31,6 +31,22 @@
       "1p": "serions",
       "2p": "seriez",
       "3p": "seraient"
+    },
+    "passé composé": {
+      "1s": "ai été",
+      "2s": "as été",
+      "3s": "a été",
+      "1p": "avons été",
+      "2p": "avez été",
+      "3p": "ont été"
+    },
+    "passé simple": {
+      "1s": "fus",
+      "2s": "fus",
+      "3s": "fut",
+      "1p": "fûmes",
+      "2p": "fûtes",
+      "3p": "furent"
     }
   },
   "avoir": {
@@ -65,6 +81,22 @@
       "1p": "aurions",
       "2p": "auriez",
       "3p": "auraient"
+    },
+    "passé composé": {
+      "1s": "ai eu",
+      "2s": "as eu",
+      "3s": "a eu",
+      "1p": "avons eu",
+      "2p": "avez eu",
+      "3p": "ont eu"
+    },
+    "passé simple": {
+      "1s": "eus",
+      "2s": "eus",
+      "3s": "eut",
+      "1p": "eûmes",
+      "2p": "eûtes",
+      "3p": "eurent"
     }
   },
   "aller": {
@@ -99,6 +131,22 @@
       "1p": "irions",
       "2p": "iriez",
       "3p": "iraient"
+    },
+    "passé composé": {
+      "1s": "suis allé",
+      "2s": "es allé",
+      "3s": "est allé",
+      "1p": "sommes allés",
+      "2p": "êtes allés",
+      "3p": "sont allés"
+    },
+    "passé simple": {
+      "1s": "allai",
+      "2s": "allas",
+      "3s": "alla",
+      "1p": "allâmes",
+      "2p": "allâtes",
+      "3p": "allèrent"
     }
   },
   "finir": {
@@ -133,6 +181,22 @@
       "1p": "finirions",
       "2p": "finiriez",
       "3p": "finiraient"
+    },
+    "passé composé": {
+      "1s": "ai fini",
+      "2s": "as fini",
+      "3s": "a fini",
+      "1p": "avons fini",
+      "2p": "avez fini",
+      "3p": "ont fini"
+    },
+    "passé simple": {
+      "1s": "finis",
+      "2s": "finis",
+      "3s": "finit",
+      "1p": "finîmes",
+      "2p": "finîtes",
+      "3p": "finirent"
     }
   },
   "aimer": {
@@ -167,6 +231,1122 @@
       "1p": "aimerions",
       "2p": "aimeriez",
       "3p": "aimeraient"
+    },
+    "passé composé": {
+      "1s": "ai aimé",
+      "2s": "as aimé",
+      "3s": "a aimé",
+      "1p": "avons aimé",
+      "2p": "avez aimé",
+      "3p": "ont aimé"
+    },
+    "passé simple": {
+      "1s": "aimai",
+      "2s": "aimas",
+      "3s": "aima",
+      "1p": "aimâmes",
+      "2p": "aimâtes",
+      "3p": "aimèrent"
+    }
+  },
+  "commencer": {
+    "présent": {
+      "1s": "commence",
+      "2s": "commences",
+      "3s": "commence",
+      "1p": "commençons",
+      "2p": "commencez",
+      "3p": "commencent"
+    },
+    "imparfait": {
+      "1s": "commençais",
+      "2s": "commençais",
+      "3s": "commençait",
+      "1p": "commencions",
+      "2p": "commenciez",
+      "3p": "commençaient"
+    },
+    "futur simple": {
+      "1s": "commencerai",
+      "2s": "commenceras",
+      "3s": "commencera",
+      "1p": "commencerons",
+      "2p": "commencerez",
+      "3p": "commenceront"
+    },
+    "conditionnel présent": {
+      "1s": "commencerais",
+      "2s": "commencerais",
+      "3s": "commencerait",
+      "1p": "commencerions",
+      "2p": "commenceriez",
+      "3p": "commenceraient"
+    },
+    "passé composé": {
+      "1s": "ai commencé",
+      "2s": "as commencé",
+      "3s": "a commencé",
+      "1p": "avons commencé",
+      "2p": "avez commencé",
+      "3p": "ont commencé"
+    },
+    "passé simple": {
+      "1s": "commençai",
+      "2s": "commenças",
+      "3s": "commença",
+      "1p": "commençâmes",
+      "2p": "commençâtes",
+      "3p": "commencèrent"
+    }
+  },
+  "manger": {
+    "présent": {
+      "1s": "mange",
+      "2s": "manges",
+      "3s": "mange",
+      "1p": "mangeons",
+      "2p": "mangez",
+      "3p": "mangent"
+    },
+    "imparfait": {
+      "1s": "mangeais",
+      "2s": "mangeais",
+      "3s": "mangeait",
+      "1p": "mangions",
+      "2p": "mangiez",
+      "3p": "mangeaient"
+    },
+    "futur simple": {
+      "1s": "mangerai",
+      "2s": "mangeras",
+      "3s": "mangera",
+      "1p": "mangerons",
+      "2p": "mangerez",
+      "3p": "mangeront"
+    },
+    "conditionnel présent": {
+      "1s": "mangerais",
+      "2s": "mangerais",
+      "3s": "mangerait",
+      "1p": "mangerions",
+      "2p": "mangeriez",
+      "3p": "mangeraient"
+    },
+    "passé composé": {
+      "1s": "ai mangé",
+      "2s": "as mangé",
+      "3s": "a mangé",
+      "1p": "avons mangé",
+      "2p": "avez mangé",
+      "3p": "ont mangé"
+    },
+    "passé simple": {
+      "1s": "mangeai",
+      "2s": "mangeas",
+      "3s": "mangea",
+      "1p": "mangeâmes",
+      "2p": "mangeâtes",
+      "3p": "mangèrent"
+    }
+  },
+  "ouvrir": {
+    "présent": {
+      "1s": "ouvre",
+      "2s": "ouvres",
+      "3s": "ouvre",
+      "1p": "ouvrons",
+      "2p": "ouvrez",
+      "3p": "ouvrent"
+    },
+    "imparfait": {
+      "1s": "ouvrais",
+      "2s": "ouvrais",
+      "3s": "ouvrait",
+      "1p": "ouvrions",
+      "2p": "ouvriez",
+      "3p": "ouvraient"
+    },
+    "futur simple": {
+      "1s": "ouvrirai",
+      "2s": "ouvriras",
+      "3s": "ouvrira",
+      "1p": "ouvrirons",
+      "2p": "ouvrirez",
+      "3p": "ouvriront"
+    },
+    "conditionnel présent": {
+      "1s": "ouvrirais",
+      "2s": "ouvrirais",
+      "3s": "ouvrirait",
+      "1p": "ouvririons",
+      "2p": "ouvririez",
+      "3p": "ouvriraient"
+    },
+    "passé composé": {
+      "1s": "ai ouvert",
+      "2s": "as ouvert",
+      "3s": "a ouvert",
+      "1p": "avons ouvert",
+      "2p": "avez ouvert",
+      "3p": "ont ouvert"
+    },
+    "passé simple": {
+      "1s": "ouvris",
+      "2s": "ouvris",
+      "3s": "ouvrit",
+      "1p": "ouvrîmes",
+      "2p": "ouvrîtes",
+      "3p": "ouvrirent"
+    }
+  },
+  "partir": {
+    "présent": {
+      "1s": "pars",
+      "2s": "pars",
+      "3s": "part",
+      "1p": "partons",
+      "2p": "partez",
+      "3p": "partent"
+    },
+    "imparfait": {
+      "1s": "partais",
+      "2s": "partais",
+      "3s": "partait",
+      "1p": "partions",
+      "2p": "partiez",
+      "3p": "partaient"
+    },
+    "futur simple": {
+      "1s": "partirai",
+      "2s": "partiras",
+      "3s": "partira",
+      "1p": "partirons",
+      "2p": "partirez",
+      "3p": "partiront"
+    },
+    "conditionnel présent": {
+      "1s": "partirais",
+      "2s": "partirais",
+      "3s": "partirait",
+      "1p": "partirions",
+      "2p": "partiriez",
+      "3p": "partiraient"
+    },
+    "passé composé": {
+      "1s": "suis parti",
+      "2s": "es parti",
+      "3s": "est parti",
+      "1p": "sommes partis",
+      "2p": "êtes partis",
+      "3p": "sont partis"
+    },
+    "passé simple": {
+      "1s": "partis",
+      "2s": "partis",
+      "3s": "partit",
+      "1p": "partîmes",
+      "2p": "partîtes",
+      "3p": "partirent"
+    }
+  },
+  "tenir": {
+    "présent": {
+      "1s": "tiens",
+      "2s": "tiens",
+      "3s": "tient",
+      "1p": "tenons",
+      "2p": "tenez",
+      "3p": "tiennent"
+    },
+    "imparfait": {
+      "1s": "tenais",
+      "2s": "tenais",
+      "3s": "tenait",
+      "1p": "tenions",
+      "2p": "teniez",
+      "3p": "tenaient"
+    },
+    "futur simple": {
+      "1s": "tiendrai",
+      "2s": "tiendras",
+      "3s": "tiendra",
+      "1p": "tiendrons",
+      "2p": "tiendrez",
+      "3p": "tiendront"
+    },
+    "conditionnel présent": {
+      "1s": "tiendrais",
+      "2s": "tiendrais",
+      "3s": "tiendrait",
+      "1p": "tiendrions",
+      "2p": "tiendriez",
+      "3p": "tiendraient"
+    },
+    "passé composé": {
+      "1s": "ai tenu",
+      "2s": "as tenu",
+      "3s": "a tenu",
+      "1p": "avons tenu",
+      "2p": "avez tenu",
+      "3p": "ont tenu"
+    },
+    "passé simple": {
+      "1s": "tins",
+      "2s": "tins",
+      "3s": "tint",
+      "1p": "tînmes",
+      "2p": "tîntes",
+      "3p": "tinrent"
+    }
+  },
+  "venir": {
+    "présent": {
+      "1s": "viens",
+      "2s": "viens",
+      "3s": "vient",
+      "1p": "venons",
+      "2p": "venez",
+      "3p": "viennent"
+    },
+    "imparfait": {
+      "1s": "venais",
+      "2s": "venais",
+      "3s": "venait",
+      "1p": "venions",
+      "2p": "veniez",
+      "3p": "venaient"
+    },
+    "futur simple": {
+      "1s": "viendrai",
+      "2s": "viendras",
+      "3s": "viendra",
+      "1p": "viendrons",
+      "2p": "viendrez",
+      "3p": "viendront"
+    },
+    "conditionnel présent": {
+      "1s": "viendrais",
+      "2s": "viendrais",
+      "3s": "viendrait",
+      "1p": "viendrions",
+      "2p": "viendriez",
+      "3p": "viendraient"
+    },
+    "passé composé": {
+      "1s": "suis venu",
+      "2s": "es venu",
+      "3s": "est venu",
+      "1p": "sommes venus",
+      "2p": "êtes venus",
+      "3p": "sont venus"
+    },
+    "passé simple": {
+      "1s": "vins",
+      "2s": "vins",
+      "3s": "vint",
+      "1p": "vînmes",
+      "2p": "vîntes",
+      "3p": "vinrent"
+    }
+  },
+  "devoir": {
+    "présent": {
+      "1s": "dois",
+      "2s": "dois",
+      "3s": "doit",
+      "1p": "devons",
+      "2p": "devez",
+      "3p": "doivent"
+    },
+    "imparfait": {
+      "1s": "devais",
+      "2s": "devais",
+      "3s": "devait",
+      "1p": "devions",
+      "2p": "deviez",
+      "3p": "devaient"
+    },
+    "futur simple": {
+      "1s": "devrai",
+      "2s": "devras",
+      "3s": "devra",
+      "1p": "devrons",
+      "2p": "devrez",
+      "3p": "devront"
+    },
+    "conditionnel présent": {
+      "1s": "devrais",
+      "2s": "devrais",
+      "3s": "devrait",
+      "1p": "devrions",
+      "2p": "devriez",
+      "3p": "devraient"
+    },
+    "passé composé": {
+      "1s": "ai dû",
+      "2s": "as dû",
+      "3s": "a dû",
+      "1p": "avons dû",
+      "2p": "avez dû",
+      "3p": "ont dû"
+    },
+    "passé simple": {
+      "1s": "dus",
+      "2s": "dus",
+      "3s": "dut",
+      "1p": "dûmes",
+      "2p": "dûtes",
+      "3p": "durent"
+    }
+  },
+  "pouvoir": {
+    "présent": {
+      "1s": "peux",
+      "2s": "peux",
+      "3s": "peut",
+      "1p": "pouvons",
+      "2p": "pouvez",
+      "3p": "peuvent"
+    },
+    "imparfait": {
+      "1s": "pouvais",
+      "2s": "pouvais",
+      "3s": "pouvait",
+      "1p": "pouvions",
+      "2p": "pouviez",
+      "3p": "pouvaient"
+    },
+    "futur simple": {
+      "1s": "pourrai",
+      "2s": "pourras",
+      "3s": "pourra",
+      "1p": "pourrons",
+      "2p": "pourrez",
+      "3p": "pourront"
+    },
+    "conditionnel présent": {
+      "1s": "pourrais",
+      "2s": "pourrais",
+      "3s": "pourrait",
+      "1p": "pourrions",
+      "2p": "pourriez",
+      "3p": "pourraient"
+    },
+    "passé composé": {
+      "1s": "ai pu",
+      "2s": "as pu",
+      "3s": "a pu",
+      "1p": "avons pu",
+      "2p": "avez pu",
+      "3p": "ont pu"
+    },
+    "passé simple": {
+      "1s": "pus",
+      "2s": "pus",
+      "3s": "put",
+      "1p": "pûmes",
+      "2p": "pûtes",
+      "3p": "purent"
+    }
+  },
+  "savoir": {
+    "présent": {
+      "1s": "sais",
+      "2s": "sais",
+      "3s": "sait",
+      "1p": "savons",
+      "2p": "savez",
+      "3p": "savent"
+    },
+    "imparfait": {
+      "1s": "savais",
+      "2s": "savais",
+      "3s": "savait",
+      "1p": "savions",
+      "2p": "saviez",
+      "3p": "savaient"
+    },
+    "futur simple": {
+      "1s": "saurai",
+      "2s": "sauras",
+      "3s": "saura",
+      "1p": "saurons",
+      "2p": "saurez",
+      "3p": "sauront"
+    },
+    "conditionnel présent": {
+      "1s": "saurais",
+      "2s": "saurais",
+      "3s": "saurait",
+      "1p": "saurions",
+      "2p": "sauriez",
+      "3p": "sauraient"
+    },
+    "passé composé": {
+      "1s": "ai su",
+      "2s": "as su",
+      "3s": "a su",
+      "1p": "avons su",
+      "2p": "avez su",
+      "3p": "ont su"
+    },
+    "passé simple": {
+      "1s": "sus",
+      "2s": "sus",
+      "3s": "sut",
+      "1p": "sûmes",
+      "2p": "sûtes",
+      "3p": "surent"
+    }
+  },
+  "voir": {
+    "présent": {
+      "1s": "vois",
+      "2s": "vois",
+      "3s": "voit",
+      "1p": "voyons",
+      "2p": "voyez",
+      "3p": "voient"
+    },
+    "imparfait": {
+      "1s": "voyais",
+      "2s": "voyais",
+      "3s": "voyait",
+      "1p": "voyions",
+      "2p": "voyiez",
+      "3p": "voyaient"
+    },
+    "futur simple": {
+      "1s": "verrai",
+      "2s": "verras",
+      "3s": "verra",
+      "1p": "verrons",
+      "2p": "verrez",
+      "3p": "verront"
+    },
+    "conditionnel présent": {
+      "1s": "verrais",
+      "2s": "verrais",
+      "3s": "verrait",
+      "1p": "verrions",
+      "2p": "verriez",
+      "3p": "verraient"
+    },
+    "passé composé": {
+      "1s": "ai vu",
+      "2s": "as vu",
+      "3s": "a vu",
+      "1p": "avons vu",
+      "2p": "avez vu",
+      "3p": "ont vu"
+    },
+    "passé simple": {
+      "1s": "vis",
+      "2s": "vis",
+      "3s": "vit",
+      "1p": "vîmes",
+      "2p": "vîtes",
+      "3p": "virent"
+    }
+  },
+  "vouloir": {
+    "présent": {
+      "1s": "veux",
+      "2s": "veux",
+      "3s": "veut",
+      "1p": "voulons",
+      "2p": "voulez",
+      "3p": "veulent"
+    },
+    "imparfait": {
+      "1s": "voulais",
+      "2s": "voulais",
+      "3s": "voulait",
+      "1p": "voulions",
+      "2p": "vouliez",
+      "3p": "voulaient"
+    },
+    "futur simple": {
+      "1s": "voudrai",
+      "2s": "voudras",
+      "3s": "voudra",
+      "1p": "voudrons",
+      "2p": "voudrez",
+      "3p": "voudront"
+    },
+    "conditionnel présent": {
+      "1s": "voudrais",
+      "2s": "voudrais",
+      "3s": "voudrait",
+      "1p": "voudrions",
+      "2p": "voudriez",
+      "3p": "voudraient"
+    },
+    "passé composé": {
+      "1s": "ai voulu",
+      "2s": "as voulu",
+      "3s": "a voulu",
+      "1p": "avons voulu",
+      "2p": "avez voulu",
+      "3p": "ont voulu"
+    },
+    "passé simple": {
+      "1s": "voulus",
+      "2s": "voulus",
+      "3s": "voulut",
+      "1p": "voulûmes",
+      "2p": "voulûtes",
+      "3p": "voulurent"
+    }
+  },
+  "dire": {
+    "présent": {
+      "1s": "dis",
+      "2s": "dis",
+      "3s": "dit",
+      "1p": "disons",
+      "2p": "dites",
+      "3p": "disent"
+    },
+    "imparfait": {
+      "1s": "disais",
+      "2s": "disais",
+      "3s": "disait",
+      "1p": "disions",
+      "2p": "disiez",
+      "3p": "disaient"
+    },
+    "futur simple": {
+      "1s": "dirai",
+      "2s": "diras",
+      "3s": "dira",
+      "1p": "dirons",
+      "2p": "direz",
+      "3p": "diront"
+    },
+    "conditionnel présent": {
+      "1s": "dirais",
+      "2s": "dirais",
+      "3s": "dirait",
+      "1p": "dirions",
+      "2p": "diriez",
+      "3p": "diraient"
+    },
+    "passé composé": {
+      "1s": "ai dit",
+      "2s": "as dit",
+      "3s": "a dit",
+      "1p": "avons dit",
+      "2p": "avez dit",
+      "3p": "ont dit"
+    },
+    "passé simple": {
+      "1s": "dis",
+      "2s": "dis",
+      "3s": "dit",
+      "1p": "dîmes",
+      "2p": "dîtes",
+      "3p": "dirent"
+    }
+  },
+  "faire": {
+    "présent": {
+      "1s": "fais",
+      "2s": "fais",
+      "3s": "fait",
+      "1p": "faisons",
+      "2p": "faites",
+      "3p": "font"
+    },
+    "imparfait": {
+      "1s": "faisais",
+      "2s": "faisais",
+      "3s": "faisait",
+      "1p": "faisions",
+      "2p": "faisiez",
+      "3p": "faisaient"
+    },
+    "futur simple": {
+      "1s": "ferai",
+      "2s": "feras",
+      "3s": "fera",
+      "1p": "ferons",
+      "2p": "ferez",
+      "3p": "feront"
+    },
+    "conditionnel présent": {
+      "1s": "ferais",
+      "2s": "ferais",
+      "3s": "ferait",
+      "1p": "ferions",
+      "2p": "feriez",
+      "3p": "feraient"
+    },
+    "passé composé": {
+      "1s": "ai fait",
+      "2s": "as fait",
+      "3s": "a fait",
+      "1p": "avons fait",
+      "2p": "avez fait",
+      "3p": "ont fait"
+    },
+    "passé simple": {
+      "1s": "fis",
+      "2s": "fis",
+      "3s": "fit",
+      "1p": "fîmes",
+      "2p": "fîtes",
+      "3p": "firent"
+    }
+  },
+  "mettre": {
+    "présent": {
+      "1s": "mets",
+      "2s": "mets",
+      "3s": "met",
+      "1p": "mettons",
+      "2p": "mettez",
+      "3p": "mettent"
+    },
+    "imparfait": {
+      "1s": "mettais",
+      "2s": "mettais",
+      "3s": "mettait",
+      "1p": "mettions",
+      "2p": "mettiez",
+      "3p": "mettaient"
+    },
+    "futur simple": {
+      "1s": "mettrai",
+      "2s": "mettras",
+      "3s": "mettra",
+      "1p": "mettrons",
+      "2p": "mettrez",
+      "3p": "mettront"
+    },
+    "conditionnel présent": {
+      "1s": "mettrais",
+      "2s": "mettrais",
+      "3s": "mettrait",
+      "1p": "mettrions",
+      "2p": "mettriez",
+      "3p": "mettraient"
+    },
+    "passé composé": {
+      "1s": "ai mis",
+      "2s": "as mis",
+      "3s": "a mis",
+      "1p": "avons mis",
+      "2p": "avez mis",
+      "3p": "ont mis"
+    },
+    "passé simple": {
+      "1s": "mis",
+      "2s": "mis",
+      "3s": "mit",
+      "1p": "mîmes",
+      "2p": "mîtes",
+      "3p": "mirent"
+    }
+  },
+  "prendre": {
+    "présent": {
+      "1s": "prends",
+      "2s": "prends",
+      "3s": "prend",
+      "1p": "prenons",
+      "2p": "prenez",
+      "3p": "prennent"
+    },
+    "imparfait": {
+      "1s": "prenais",
+      "2s": "prenais",
+      "3s": "prenait",
+      "1p": "prenions",
+      "2p": "preniez",
+      "3p": "prenaient"
+    },
+    "futur simple": {
+      "1s": "prendrai",
+      "2s": "prendras",
+      "3s": "prendra",
+      "1p": "prendrons",
+      "2p": "prendrez",
+      "3p": "prendront"
+    },
+    "conditionnel présent": {
+      "1s": "prendrais",
+      "2s": "prendrais",
+      "3s": "prendrait",
+      "1p": "prendrions",
+      "2p": "prendriez",
+      "3p": "prendraient"
+    },
+    "passé composé": {
+      "1s": "ai pris",
+      "2s": "as pris",
+      "3s": "a pris",
+      "1p": "avons pris",
+      "2p": "avez pris",
+      "3p": "ont pris"
+    },
+    "passé simple": {
+      "1s": "pris",
+      "2s": "pris",
+      "3s": "prit",
+      "1p": "prîmes",
+      "2p": "prîtes",
+      "3p": "prirent"
+    }
+  },
+  "rendre": {
+    "présent": {
+      "1s": "rends",
+      "2s": "rends",
+      "3s": "rend",
+      "1p": "rendons",
+      "2p": "rendez",
+      "3p": "rendent"
+    },
+    "imparfait": {
+      "1s": "rendais",
+      "2s": "rendais",
+      "3s": "rendait",
+      "1p": "rendions",
+      "2p": "rendiez",
+      "3p": "rendaient"
+    },
+    "futur simple": {
+      "1s": "rendrai",
+      "2s": "rendras",
+      "3s": "rendra",
+      "1p": "rendrons",
+      "2p": "rendrez",
+      "3p": "rendront"
+    },
+    "conditionnel présent": {
+      "1s": "rendrais",
+      "2s": "rendrais",
+      "3s": "rendrait",
+      "1p": "rendrions",
+      "2p": "rendriez",
+      "3p": "rendraient"
+    },
+    "passé composé": {
+      "1s": "ai rendu",
+      "2s": "as rendu",
+      "3s": "a rendu",
+      "1p": "avons rendu",
+      "2p": "avez rendu",
+      "3p": "ont rendu"
+    },
+    "passé simple": {
+      "1s": "rendis",
+      "2s": "rendis",
+      "3s": "rendit",
+      "1p": "rendîmes",
+      "2p": "rendîtes",
+      "3p": "rendirent"
+    }
+  },
+  "acheter": {
+    "présent": {
+      "1s": "achète",
+      "2s": "achètes",
+      "3s": "achète",
+      "1p": "achetons",
+      "2p": "achetez",
+      "3p": "achètent"
+    },
+    "imparfait": {
+      "1s": "achetais",
+      "2s": "achetais",
+      "3s": "achetait",
+      "1p": "achetions",
+      "2p": "achetiez",
+      "3p": "achetaient"
+    },
+    "futur simple": {
+      "1s": "achèterai",
+      "2s": "achèteras",
+      "3s": "achètera",
+      "1p": "achèterons",
+      "2p": "achèterez",
+      "3p": "achèteront"
+    },
+    "conditionnel présent": {
+      "1s": "achèterais",
+      "2s": "achèterais",
+      "3s": "achèterait",
+      "1p": "achèterions",
+      "2p": "achèteriez",
+      "3p": "achèteraient"
+    },
+    "passé composé": {
+      "1s": "ai acheté",
+      "2s": "as acheté",
+      "3s": "a acheté",
+      "1p": "avons acheté",
+      "2p": "avez acheté",
+      "3p": "ont acheté"
+    },
+    "passé simple": {
+      "1s": "achetai",
+      "2s": "achetas",
+      "3s": "acheta",
+      "1p": "achetâmes",
+      "2p": "achetâtes",
+      "3p": "achetèrent"
+    }
+  },
+  "appeler": {
+    "présent": {
+      "1s": "appelle",
+      "2s": "appelles",
+      "3s": "appelle",
+      "1p": "appelons",
+      "2p": "appelez",
+      "3p": "appellent"
+    },
+    "imparfait": {
+      "1s": "appelais",
+      "2s": "appelais",
+      "3s": "appelait",
+      "1p": "appelions",
+      "2p": "appeliez",
+      "3p": "appelaient"
+    },
+    "futur simple": {
+      "1s": "appellerai",
+      "2s": "appelleras",
+      "3s": "appellera",
+      "1p": "appellerons",
+      "2p": "appellerez",
+      "3p": "appelleront"
+    },
+    "conditionnel présent": {
+      "1s": "appellerais",
+      "2s": "appellerais",
+      "3s": "appellerait",
+      "1p": "appellerions",
+      "2p": "appelleriez",
+      "3p": "appelleraient"
+    },
+    "passé composé": {
+      "1s": "ai appelé",
+      "2s": "as appelé",
+      "3s": "a appelé",
+      "1p": "avons appelé",
+      "2p": "avez appelé",
+      "3p": "ont appelé"
+    },
+    "passé simple": {
+      "1s": "appelai",
+      "2s": "appelas",
+      "3s": "appela",
+      "1p": "appelâmes",
+      "2p": "appelâtes",
+      "3p": "appelèrent"
+    }
+  },
+  "céder": {
+    "présent": {
+      "1s": "cède",
+      "2s": "cèdes",
+      "3s": "cède",
+      "1p": "cédons",
+      "2p": "cédez",
+      "3p": "cèdent"
+    },
+    "imparfait": {
+      "1s": "cédais",
+      "2s": "cédais",
+      "3s": "cédait",
+      "1p": "cédions",
+      "2p": "cédiez",
+      "3p": "cédaient"
+    },
+    "futur simple": {
+      "1s": "céderai",
+      "2s": "céderas",
+      "3s": "cédera",
+      "1p": "céderons",
+      "2p": "céderez",
+      "3p": "céderont"
+    },
+    "conditionnel présent": {
+      "1s": "céderais",
+      "2s": "céderais",
+      "3s": "céderait",
+      "1p": "céderions",
+      "2p": "céderiez",
+      "3p": "céderaient"
+    },
+    "passé composé": {
+      "1s": "ai cédé",
+      "2s": "as cédé",
+      "3s": "a cédé",
+      "1p": "avons cédé",
+      "2p": "avez cédé",
+      "3p": "ont cédé"
+    },
+    "passé simple": {
+      "1s": "cédai",
+      "2s": "cédas",
+      "3s": "céda",
+      "1p": "cédâmes",
+      "2p": "cédâtes",
+      "3p": "cédèrent"
+    }
+  },
+  "employer": {
+    "présent": {
+      "1s": "emploie",
+      "2s": "emploies",
+      "3s": "emploie",
+      "1p": "employons",
+      "2p": "employez",
+      "3p": "emploient"
+    },
+    "imparfait": {
+      "1s": "employais",
+      "2s": "employais",
+      "3s": "employait",
+      "1p": "employions",
+      "2p": "employiez",
+      "3p": "employaient"
+    },
+    "futur simple": {
+      "1s": "emploierai",
+      "2s": "emploieras",
+      "3s": "emploiera",
+      "1p": "emploierons",
+      "2p": "emploierez",
+      "3p": "emploieront"
+    },
+    "conditionnel présent": {
+      "1s": "emploierais",
+      "2s": "emploierais",
+      "3s": "emploierait",
+      "1p": "emploierions",
+      "2p": "emploieriez",
+      "3p": "emploieraient"
+    },
+    "passé composé": {
+      "1s": "ai employé",
+      "2s": "as employé",
+      "3s": "a employé",
+      "1p": "avons employé",
+      "2p": "avez employé",
+      "3p": "ont employé"
+    },
+    "passé simple": {
+      "1s": "employai",
+      "2s": "employas",
+      "3s": "employa",
+      "1p": "employâmes",
+      "2p": "employâtes",
+      "3p": "employèrent"
+    }
+  },
+  "jeter": {
+    "présent": {
+      "1s": "jette",
+      "2s": "jettes",
+      "3s": "jette",
+      "1p": "jetons",
+      "2p": "jetez",
+      "3p": "jettent"
+    },
+    "imparfait": {
+      "1s": "jetais",
+      "2s": "jetais",
+      "3s": "jetait",
+      "1p": "jetions",
+      "2p": "jetiez",
+      "3p": "jetaient"
+    },
+    "futur simple": {
+      "1s": "jetterai",
+      "2s": "jetteras",
+      "3s": "jettera",
+      "1p": "jetterons",
+      "2p": "jetterez",
+      "3p": "jetteront"
+    },
+    "conditionnel présent": {
+      "1s": "jetterais",
+      "2s": "jetterais",
+      "3s": "jetterait",
+      "1p": "jetterions",
+      "2p": "jetteriez",
+      "3p": "jetteraient"
+    },
+    "passé composé": {
+      "1s": "ai jeté",
+      "2s": "as jeté",
+      "3s": "a jeté",
+      "1p": "avons jeté",
+      "2p": "avez jeté",
+      "3p": "ont jeté"
+    },
+    "passé simple": {
+      "1s": "jetai",
+      "2s": "jetas",
+      "3s": "jeta",
+      "1p": "jetâmes",
+      "2p": "jetâtes",
+      "3p": "jetèrent"
+    }
+  },
+  "pourvoir": {
+    "présent": {
+      "1s": "pourvois",
+      "2s": "pourvois",
+      "3s": "pourvoit",
+      "1p": "pourvoyons",
+      "2p": "pourvoyez",
+      "3p": "pourvoient"
+    },
+    "imparfait": {
+      "1s": "pourvoyais",
+      "2s": "pourvoyais",
+      "3s": "pourvoyait",
+      "1p": "pourvoyions",
+      "2p": "pourvoyiez",
+      "3p": "pourvoyaient"
+    },
+    "futur simple": {
+      "1s": "pourvoirai",
+      "2s": "pourvoiras",
+      "3s": "pourvoira",
+      "1p": "pourvoirons",
+      "2p": "pourvoirez",
+      "3p": "pourvoiront"
+    },
+    "conditionnel présent": {
+      "1s": "pourvoirais",
+      "2s": "pourvoirais",
+      "3s": "pourvoirait",
+      "1p": "pourvoirions",
+      "2p": "pourvoiriez",
+      "3p": "pourvoiraient"
+    },
+    "passé composé": {
+      "1s": "ai pourvu",
+      "2s": "as pourvu",
+      "3s": "a pourvu",
+      "1p": "avons pourvu",
+      "2p": "avez pourvu",
+      "3p": "ont pourvu"
+    },
+    "passé simple": {
+      "1s": "pourvus",
+      "2s": "pourvus",
+      "3s": "pourvut",
+      "1p": "pourvûmes",
+      "2p": "pourvûtes",
+      "3p": "pourvurent"
     }
   }
 }
