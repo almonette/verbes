@@ -346,3 +346,6 @@ select {
   background: #0a1328;
   display: inline-block;
 }
+#presetSelect {
+  min-width: 260px;
+}

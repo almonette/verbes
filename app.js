@@ -59,6 +59,8 @@
 
   // État de profil (chargé lors d'un switch)
   let settings; // dépend des JSON
+  let stagedSettings; // init dans renderSettings()
+  const deepClone = (o) => JSON.parse(JSON.stringify(o));
   let progress = {}; // init dans loadProfileState()
 
   function getDefaultSettings() {
@@ -72,6 +74,7 @@
   function loadProfileState() {
     settings = loadP(LS_KEYS.settings, getDefaultSettings());
     progress = loadP(LS_KEYS.progress, {});
+    stagedSettings = deepClone(settings);
   }
   function switchProfile(name) {
     PROFILE_ID = sanitizeId(name);
@@ -89,6 +92,7 @@
   let PERSONNES = [];
   let TEMPS = [];
   let CONJ = {};
+  let PRESETS = [];
 
   // Données utilisateur simple (prénom)
   let user = loadLS(LS_KEYS.user, { pseudo: '', theme: 'sombre', dernierLogin: nowISO() });
@@ -111,14 +115,18 @@
 
   async function initData() {
     try {
-      const [p, t, c] = await Promise.all([
+      const [p, t, c, pr] = await Promise.all([
         fetch('data/personnes.json').then((r) => r.json()),
         fetch('data/temps.json').then((r) => r.json()),
         fetch('data/conj.json').then((r) => r.json()),
+        fetch('data/presets.json')
+          .then((r) => r.json())
+          .catch(() => []),
       ]);
       PERSONNES = p;
       TEMPS = t;
       CONJ = c;
+      PRESETS = pr || [];
     } catch (e) {
       console.warn('Chargement JSON échoué, fallback local utilisé.', e);
       PERSONNES = [
@@ -175,6 +183,26 @@
           },
         },
       };
+      PRESETS = [
+        {
+          id: '5e-phase-1',
+          label: '5e – Phase 1 (Présent + Imparfait, 10 verbes)',
+          verbes: [
+            'avoir',
+            'être',
+            'aimer',
+            'aller',
+            'finir',
+            'commencer',
+            'manger',
+            'ouvrir',
+            'partir',
+            'tenir',
+          ],
+          temps: ['présent', 'imparfait'],
+          questionsParSession: 10,
+        },
+      ];
     }
   }
 
@@ -235,12 +263,15 @@
     resetProgressBtn = $id('resetProgress');
 
     saveSettingsBtn.onclick = () => {
-      settings.questionsParSession = Math.max(
+      stagedSettings.questionsParSession = Math.max(
         5,
         Math.min(20, parseInt(qCountEl.value || '10', 10))
       );
+      // commit : staged -> settings
+      settings = deepClone(stagedSettings);
       saveP(LS_KEYS.settings, settings);
-      fillSelects();
+      // rafraîchir les zones qui dépendent des réglages persistés
+      fillSelects(); // Mode libre (utilise settings persisté)
       ensureLibreSelectionValid();
       alert('Réglages enregistrés !');
     };
@@ -404,13 +435,30 @@
    * 6) UI — Réglages/Dashboard
    * ========================= */
   function renderSettings() {
+    // --- Presets dropdown ---
+    const presetSel = document.getElementById('presetSelect');
+    if (presetSel) {
+      // options
+      presetSel.innerHTML =
+        `<option value="">— choisir —</option>` +
+        PRESETS.map((p) => `<option value="${p.id}">${p.label}</option>`).join('');
+      // onChange : applique à l'APERÇU (stagedSettings), sans sauvegarder
+      presetSel.onchange = () => {
+        const id = presetSel.value;
+        if (!id) return;
+        const resolved = resolvePreset(id);
+        applyPresetToStaged(resolved);
+        // Re-rendre les cases pour refléter l’aperçu
+        renderSettings();
+      };
+    }
     // Verbes
     verbsChecks.innerHTML = '';
     Object.keys(CONJ).forEach((v) => {
       const id = 'vchk_' + v;
       const wrap = document.createElement('label');
       wrap.innerHTML = `<input type="checkbox" id="${id}" ${
-        settings.verbesActifs.includes(v) ? 'checked' : ''
+        stagedSettings.verbesActifs.includes(v) ? 'checked' : ''
       }/> ${v}`;
       verbsChecks.appendChild(wrap);
       $id(id).onchange = (e) => {
@@ -422,6 +470,11 @@
         saveP(LS_KEYS.settings, settings);
         fillSelects();
         ensureLibreSelectionValid();
+        if (e.target.checked) {
+          if (!stagedSettings.verbesActifs.includes(v)) stagedSettings.verbesActifs.push(v);
+        } else {
+          stagedSettings.verbesActifs = stagedSettings.verbesActifs.filter((x) => x !== v);
+        }
       };
     });
 
@@ -431,7 +484,7 @@
       const id = 'tchk_' + t;
       const wrap = document.createElement('label');
       wrap.innerHTML = `<input type="checkbox" id="${id}" ${
-        settings.tempsActifs.includes(t) ? 'checked' : ''
+        stagedSettings.tempsActifs.includes(t) ? 'checked' : ''
       }/> ${t}`;
       tensesChecks.appendChild(wrap);
       $id(id).onchange = (e) => {
@@ -443,10 +496,15 @@
         saveP(LS_KEYS.settings, settings);
         fillSelects();
         ensureLibreSelectionValid();
+        if (e.target.checked) {
+          if (!stagedSettings.tempsActifs.includes(t)) stagedSettings.tempsActifs.push(t);
+        } else {
+          stagedSettings.tempsActifs = stagedSettings.tempsActifs.filter((x) => x !== t);
+        }
       };
     });
 
-    qCountEl.value = settings.questionsParSession;
+    qCountEl.value = stagedSettings.questionsParSession ?? 10;
   }
 
   function updateDashboard() {
@@ -841,6 +899,37 @@
   /* =========================
    * 9) Conjugaison & Utils
    * ========================= */
+
+  function resolvePreset(id) {
+    const byId = Object.fromEntries(PRESETS.map((p) => [p.id, p]));
+    const seen = new Set();
+    function rec(curId) {
+      if (!curId || !byId[curId]) return { verbes: [], temps: [], questionsParSession: 10 };
+      if (seen.has(curId)) return { verbes: [], temps: [], questionsParSession: 10 }; // éviter cycles
+      seen.add(curId);
+      const p = byId[curId];
+      const base = p.extends ? rec(p.extends) : { verbes: [], temps: [], questionsParSession: 10 };
+      let verbes = (p.verbes ?? base.verbes).slice();
+      let temps = (p.temps ?? base.temps).slice();
+      if (p.add_verbes) verbes = Array.from(new Set([...base.verbes, ...p.add_verbes]));
+      if (p.add_temps) temps = Array.from(new Set([...base.temps, ...p.add_temps]));
+      const qps = p.questionsParSession ?? base.questionsParSession ?? 10;
+      return { verbes, temps, questionsParSession: qps };
+    }
+    const merged = rec(id);
+    // filtre contre le dataset courant (au cas où preset > données)
+    merged.verbes = merged.verbes.filter((v) => CONJ[v]);
+    merged.temps = merged.temps.filter((t) => TEMPS.includes(t));
+    return merged;
+  }
+
+  function applyPresetToStaged(preset) {
+    stagedSettings.verbesActifs = preset.verbes.slice();
+    stagedSettings.tempsActifs = preset.temps.slice();
+    stagedSettings.questionsParSession =
+      preset.questionsParSession ?? (stagedSettings.questionsParSession || 10);
+  }
+
   function getVerbFormOnly(v, t, pCode) {
     return CONJ[v]?.[t]?.[pCode] || '';
   }
@@ -881,4 +970,4 @@
     }
     return out || '—';
   }
-})(); // end IIFE
+})();

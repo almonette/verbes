@@ -1,0 +1,79 @@
+[
+  {
+    "id": "5e-phase-1",
+    "label": "5e – Phase 1 (Présent + Imparfait, 10 verbes)",
+    "verbes": [
+      "avoir",
+      "être",
+      "aimer",
+      "aller",
+      "finir",
+      "commencer",
+      "manger",
+      "ouvrir",
+      "partir",
+      "tenir"
+    ],
+    "temps": [
+      "présent",
+      "imparfait"
+    ],
+    "questionsParSession": 10
+  },
+  {
+    "id": "5e-phase-2",
+    "label": "5e – Phase 2 (ajout Futur)",
+    "extends": "5e-phase-1",
+    "add_temps": [
+      "futur simple"
+    ]
+  },
+  {
+    "id": "5e-phase-3",
+    "label": "5e – Phase 3 (ajout Conditionnel)",
+    "extends": "5e-phase-2",
+    "add_temps": [
+      "conditionnel présent"
+    ]
+  },
+  {
+    "id": "cycle-3-base",
+    "label": "Cycle 3 – Base (verbes usuels, 6 temps)",
+    "verbes": [
+      "avoir",
+      "être",
+      "aller",
+      "faire",
+      "dire",
+      "pouvoir",
+      "vouloir",
+      "savoir",
+      "voir",
+      "venir",
+      "prendre",
+      "mettre",
+      "finir",
+      "partir",
+      "tenir",
+      "devoir",
+      "ouvrir",
+      "manger",
+      "commencer",
+      "appeler",
+      "jeter",
+      "employer",
+      "acheter",
+      "céder",
+      "rendre"
+    ],
+    "temps": [
+      "présent",
+      "imparfait",
+      "futur simple",
+      "conditionnel présent",
+      "passé composé",
+      "passé simple"
+    ],
+    "questionsParSession": 10
+  }
+]
