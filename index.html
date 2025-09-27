@@ -23,6 +23,7 @@
         <button class="tab" data-tab="libre">Mode libre</button>
         <button class="tab" data-tab="rapport">Rapport</button>
         <button class="tab" data-tab="reglages">Réglages</button>
+        <button class="tab" data-tab="aide">À propos / Aide</button>
       </nav>
 
       <section id="dashboard" class="tab-panel active">
@@ -202,6 +203,149 @@
             <button id="saveSettings" class="btn primary">Enregistrer</button>
             <button id="resetProgress" class="btn danger">Réinitialiser la progression</button>
           </div>
+        </div>
+      </section>
+
+      <section id="aide" class="tab-panel">
+        <div class="panel help">
+          <h2>Guide de l’application</h2>
+          <p class="sub">Pour les enfants (10–11 ans) et les adultes qui suivent la progression.</p>
+
+          <div class="cards">
+            <div class="card">
+              <h3>🎬 Démarrage rapide</h3>
+              <ol class="help-steps">
+                <li>Entrer un <b>Prénom</b> en haut (crée/charge un profil séparé).</li>
+                <li>Aller dans <b>Réglages</b> et cocher les <b>verbes/temps</b> à pratiquer.</li>
+                <li>Lancer un <b>Quiz adaptatif</b> (10 questions par défaut).</li>
+              </ol>
+            </div>
+
+            <div class="card">
+              <h3>🧠 Comment ça marche</h3>
+              <p>
+                L’application repère les cartes <i>(verbe × temps × personne)</i> difficiles et les
+                re-propose plus souvent (révision espacée). Chaque réponse met à jour une note de
+                facilité, un intervalle et une date “à revoir”.
+              </p>
+            </div>
+          </div>
+
+          <details open>
+            <summary>🎯 Quiz adaptatif</summary>
+            <ul>
+              <li>Tape la forme complète <b>sujet + verbe</b> (ex. <i>nous sommes</i>).</li>
+              <li>
+                Si erreur, la correction reste affichée jusqu’au clic
+                <b>“J’ai compris / Suivant”</b>.
+              </li>
+              <li>
+                Les questions proviennent surtout des cartes <b>“à revoir aujourd’hui”</b> + un peu
+                de cartes faibles.
+              </li>
+              <li>Score et erreurs sont enregistrés dans le profil du prénom.</li>
+            </ul>
+            <p class="hint">
+              Astuce: pour <b>j’</b>, <u>pas d’espace</u> (<i>j’avais</i>). L’app tolère aussi
+              <i>j avais</i>.
+            </p>
+          </details>
+
+          <details>
+            <summary>✍️ Mode libre</summary>
+            <ul>
+              <li>Choisis <b>verbe</b> et <b>temps</b> (listes filtrées par tes Réglages).</li>
+              <li>
+                L’enfant n’écrit que <b>le verbe conjugué</b> (les sujets sont déjà affichés à
+                gauche).
+              </li>
+              <li>La correction montre <b>sujet + verbe</b> pour l’apprentissage.</li>
+              <li>Ces réponses alimentent <b>la progression</b> comme le Quiz.</li>
+            </ul>
+          </details>
+
+          <details>
+            <summary>📊 Rapport</summary>
+            <ul>
+              <li>
+                <b>Stats globales :</b> taux de réussite, cartes maîtrisées/faibles, révisions dues.
+              </li>
+              <li><b>Top 10 faiblesses</b> et <b>Top 10 maîtrisés</b> avec barres couleur.</li>
+              <li><b>Vue d’ensemble par verbe</b> (du plus faible au plus fort).</li>
+              <li>
+                <b>Détail par carte</b> : succès/échecs/total/taux pour chaque verbe-temps-personne.
+                <br /><span class="hint"
+                  >Option : “Afficher aussi les cartes sans essais” pour vérifier que tout
+                  fonctionne.</span
+                >
+              </li>
+            </ul>
+          </details>
+
+          <details>
+            <summary>🛠️ Réglages</summary>
+            <ul>
+              <li>
+                Coche les <b>verbes</b> et <b>temps</b> actifs : ils alimentent le Quiz et le Mode
+                libre.
+              </li>
+              <li><b>Questions par session</b> (5–20).</li>
+              <li><b>Réinitialiser la progression</b> : efface les stats du profil en cours.</li>
+            </ul>
+          </details>
+
+          <details>
+            <summary>👤 Profils (Prénom)</summary>
+            <ul>
+              <li>
+                Chaque <b>prénom</b> charge un <b>profil</b> séparé (réglages, progression, badges,
+                série).
+              </li>
+              <li>Changer de prénom bascule instantanément le tableau de bord et le rapport.</li>
+            </ul>
+          </details>
+
+          <details>
+            <summary>🏅 Badges</summary>
+            <ul>
+              <li><b>🎯 10/10</b> : une session parfaite.</li>
+              <li><b>📆 Série 3 jours</b> : au moins une session 3 jours d’affilée.</li>
+              <li>
+                <b>⚡ Révision à l’heure</b> : lancer une session alors qu’il y a des cartes dues et
+                la terminer.
+              </li>
+            </ul>
+          </details>
+
+          <details>
+            <summary>🔒 Données & confidentialité</summary>
+            <ul>
+              <li>
+                Toutes les données sont stockées <b>en local</b> dans ton navigateur
+                (<i>localStorage</i>).
+              </li>
+              <li>Pas de compte, pas d’envoi vers un serveur.</li>
+              <li>
+                Pour repartir à zéro : <b>Réinitialiser la progression</b> (dans Réglages) ou vider
+                le stockage du site.
+              </li>
+            </ul>
+          </details>
+
+          <details>
+            <summary>💡 Astuces</summary>
+            <ul>
+              <li>Dans le Quiz, touche <span class="kbd">Entrée</span> pour valider.</li>
+              <li>
+                Le Mode libre accepte seulement le <b>verbe</b> (pas besoin d’écrire le sujet).
+              </li>
+              <li>
+                Couleurs des barres : <span style="color: #f87171">rouge</span> &lt; 60%,
+                <span style="color: #fbbf24">orange</span> &lt; 80%,
+                <span style="color: #22c55e">vert</span> ≥ 80%.
+              </li>
+            </ul>
+          </details>
         </div>
       </section>
     </main>
