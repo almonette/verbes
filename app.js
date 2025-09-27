@@ -361,6 +361,13 @@
       quizBox.classList.remove('hidden');
       nextQuestion(pool);
     };
+
+    qInput.addEventListener('keydown', function (event) {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        qSubmit.click(); // déclenche validateCurrent()
+      }
+    });
   }
 
   /* =========================
