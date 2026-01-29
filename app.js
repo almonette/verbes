@@ -17,6 +17,7 @@
     progress: 'verbes_progress_v1',
     user: 'verbes_user_v1',
     last: 'verbes_last_session_v1',
+    history: 'verbes_history_v1',
     badges: 'verbes_badges_v1',
     streak: 'verbes_streak_v1',
   };
@@ -212,7 +213,18 @@
   let tabs, panels;
   let userNameEl, saveUserBtn;
   let verbsChecks, tensesChecks, qCountEl, saveSettingsBtn, resetProgressBtn;
-  let startQuizBtn, quizBox, qInput, qSubmit, qNext, qFeedback, qProgress, qSujet, qVerbe, qTemps;
+  let startQuizBtn,
+    quizBox,
+    qInput,
+    qSubmit,
+    qNext,
+    qFeedback,
+    qProgress,
+    qSujet,
+    qVerbe,
+    qTemps,
+    qSujetLeft;
+  let badgesEl;
   let libreVerbeSel, libreTempsSel, libreLoadBtn, libreCheckBtn;
   let detailsToggleBound = false;
 
@@ -220,13 +232,22 @@
     // Tabs
     tabs = document.querySelectorAll('.tab');
     panels = document.querySelectorAll('.tab-panel');
+    function setActiveTab(btn) {
+      tabs.forEach((b) => {
+        const isActive = b === btn;
+        b.classList.toggle('active', isActive);
+        b.setAttribute('aria-selected', isActive ? 'true' : 'false');
+        b.setAttribute('tabindex', isActive ? '0' : '-1');
+      });
+      panels.forEach((p) => {
+        const isActive = p.id === btn.dataset.tab;
+        p.classList.toggle('active', isActive);
+        p.setAttribute('aria-hidden', isActive ? 'false' : 'true');
+      });
+    }
     tabs.forEach((btn) => {
       btn.addEventListener('click', () => {
-        tabs.forEach((b) => b.classList.remove('active'));
-        panels.forEach((p) => p.classList.remove('active'));
-        btn.classList.add('active');
-        const panel = $id(btn.dataset.tab);
-        panel.classList.add('active');
+        setActiveTab(btn);
         if (btn.dataset.tab === 'rapport') {
           renderReport();
           const incZeros = $id('rDetailsAll')?.checked || false;
@@ -241,6 +262,8 @@
         }
       });
     });
+    const initialTab = document.querySelector('.tab.active') || tabs[0];
+    if (initialTab) setActiveTab(initialTab);
 
     // User box
     userNameEl = $id('userName');
@@ -270,6 +293,7 @@
       // commit : staged -> settings
       settings = deepClone(stagedSettings);
       saveP(LS_KEYS.settings, settings);
+      stagedSettings = deepClone(settings);
       // rafraîchir les zones qui dépendent des réglages persistés
       fillSelects(); // Mode libre (utilise settings persisté)
       ensureLibreSelectionValid();
@@ -326,9 +350,9 @@
         .map(
           (r) =>
             `<div class="row">
-           <span>${r.p.label}</span>
+           <span>${escapeHTML(r.p.label)}</span>
            <span>${highlight(r.inp, r.correctVerb)}</span>
-           <span>→ ${r.fullTarget}</span>
+           <span>→ ${escapeHTML(r.fullTarget)}</span>
          </div>`
         )
         .join('');
@@ -346,6 +370,8 @@
     qSujet = $id('qSujet');
     qVerbe = $id('qVerbe');
     qTemps = $id('qTemps');
+    qSujetLeft = $id('qSujetLeft');
+    badgesEl = $id('badges');
 
     startQuizBtn.onclick = () => {
       const pool = buildPool().filter((x) => CONJ[x.v] && CONJ[x.v][x.t]);
@@ -356,9 +382,25 @@
         return;
       }
       const total = Math.max(5, Math.min(20, settings.questionsParSession || 10));
-      const hadDue = pool.some((x) => getNode(x.k).due <= todayStr());
-      quizState = { total, n: 0, score: 0, items: [], errors: [], hadDueAtStart: hadDue };
+      const hadDue = pool.some((x) => x.due);
+      if (quizState?.timerId) clearTimeout(quizState.timerId);
+      quizState = {
+        total,
+        n: 0,
+        score: 0,
+        items: [],
+        errors: [],
+        hadDueAtStart: hadDue,
+        lastKey: null,
+        timerId: null,
+        finished: false,
+      };
       quizBox.classList.remove('hidden');
+      startQuizBtn.style.display = 'none';
+      qInput.disabled = false;
+      qSubmit.disabled = false;
+      qNext.style.display = 'none';
+      qFeedback.textContent = '';
       nextQuestion(pool);
     };
 
@@ -366,6 +408,32 @@
       if (event.key === 'Enter') {
         event.preventDefault();
         qSubmit.click(); // déclenche validateCurrent()
+      }
+    });
+
+    // Badges tooltip (tap/click)
+    badgesEl?.addEventListener('click', (e) => {
+      const btn = e.target.closest('.badge-btn');
+      if (!btn) return;
+      const li = btn.closest('li');
+      const tip = li?.querySelector('.badge-tip');
+      if (!tip) return;
+      const isOpen = tip.classList.contains('show');
+      badgesEl.querySelectorAll('.badge-tip.show').forEach((t) => t.classList.remove('show'));
+      badgesEl.querySelectorAll('.badge-btn[aria-expanded="true"]').forEach((b) =>
+        b.setAttribute('aria-expanded', 'false')
+      );
+      if (!isOpen) {
+        tip.classList.add('show');
+        btn.setAttribute('aria-expanded', 'true');
+      }
+    });
+    document.addEventListener('click', (e) => {
+      if (badgesEl && !badgesEl.contains(e.target)) {
+        badgesEl.querySelectorAll('.badge-tip.show').forEach((t) => t.classList.remove('show'));
+        badgesEl.querySelectorAll('.badge-btn[aria-expanded="true"]').forEach((b) =>
+          b.setAttribute('aria-expanded', 'false')
+        );
       }
     });
   }
@@ -378,18 +446,24 @@
     const pers = pc[0];
     return `${v}|${t}|${pers}|${nb}`;
   }
-  function getNode(k) {
-    if (!progress[k]) {
-      progress[k] = { streak: 0, ease: 2.5, interval: 0, due: todayStr(), weight: 2, history: [] };
-    }
-    return progress[k];
+  const DEFAULT_NODE = () => ({
+    streak: 0,
+    ease: 2.5,
+    interval: 0,
+    due: todayStr(),
+    weight: 2,
+    history: [],
+  });
+  function readNode(k) {
+    return progress && progress[k] ? progress[k] : DEFAULT_NODE();
   }
-  function peekNode(k) {
-    return progress && progress[k] ? progress[k] : null;
+  function ensureNode(k) {
+    if (!progress[k]) progress[k] = DEFAULT_NODE();
+    return progress[k];
   }
 
   function updateOnAnswer(k, ok) {
-    const n = getNode(k);
+    const n = ensureNode(k);
     if (ok) {
       n.streak += 1;
       n.ease = Math.max(1.3, n.ease + 0.1);
@@ -419,10 +493,11 @@
         if (!CONJ[v][t]) return;
         PERSONNES.forEach((p) => {
           const k = keyOf(v, t, p.code);
-          const n = getNode(k);
-          const due = n.due <= today;
+          const hasNode = !!(progress && progress[k]);
+          const n = hasNode ? progress[k] : readNode(k);
+          const due = hasNode && n.due <= today;
           const baseW = n.weight || 1;
-          const w = due ? baseW + 2 : baseW > 2 ? baseW - 1 : 1;
+          const w = hasNode ? (due ? baseW + 2 : baseW > 2 ? baseW - 1 : 1) : 1;
           pool.push({ k, v, t, p, w, due });
         });
       });
@@ -445,10 +520,12 @@
     // --- Presets dropdown ---
     const presetSel = document.getElementById('presetSelect');
     if (presetSel) {
+      const prevPreset = presetSel.value;
       // options
       presetSel.innerHTML =
         `<option value="">— choisir —</option>` +
-        PRESETS.map((p) => `<option value="${p.id}">${p.label}</option>`).join('');
+        PRESETS.map((p) => `<option value="${escapeHTML(p.id)}">${escapeHTML(p.label)}</option>`).join('');
+      if (prevPreset) presetSel.value = prevPreset;
       // onChange : applique à l'APERÇU (stagedSettings), sans sauvegarder
       presetSel.onchange = () => {
         const id = presetSel.value;
@@ -464,19 +541,14 @@
     Object.keys(CONJ).forEach((v) => {
       const id = 'vchk_' + v;
       const wrap = document.createElement('label');
-      wrap.innerHTML = `<input type="checkbox" id="${id}" ${
-        stagedSettings.verbesActifs.includes(v) ? 'checked' : ''
-      }/> ${v}`;
+      const input = document.createElement('input');
+      input.type = 'checkbox';
+      input.id = id;
+      input.checked = stagedSettings.verbesActifs.includes(v);
+      wrap.appendChild(input);
+      wrap.appendChild(document.createTextNode(' ' + v));
       verbsChecks.appendChild(wrap);
-      $id(id).onchange = (e) => {
-        if (e.target.checked) {
-          if (!settings.verbesActifs.includes(v)) settings.verbesActifs.push(v);
-        } else {
-          settings.verbesActifs = settings.verbesActifs.filter((x) => x !== v);
-        }
-        saveP(LS_KEYS.settings, settings);
-        fillSelects();
-        ensureLibreSelectionValid();
+      input.onchange = (e) => {
         if (e.target.checked) {
           if (!stagedSettings.verbesActifs.includes(v)) stagedSettings.verbesActifs.push(v);
         } else {
@@ -490,19 +562,14 @@
     TEMPS.forEach((t) => {
       const id = 'tchk_' + t;
       const wrap = document.createElement('label');
-      wrap.innerHTML = `<input type="checkbox" id="${id}" ${
-        stagedSettings.tempsActifs.includes(t) ? 'checked' : ''
-      }/> ${t}`;
+      const input = document.createElement('input');
+      input.type = 'checkbox';
+      input.id = id;
+      input.checked = stagedSettings.tempsActifs.includes(t);
+      wrap.appendChild(input);
+      wrap.appendChild(document.createTextNode(' ' + t));
       tensesChecks.appendChild(wrap);
-      $id(id).onchange = (e) => {
-        if (e.target.checked) {
-          if (!settings.tempsActifs.includes(t)) settings.tempsActifs.push(t);
-        } else {
-          settings.tempsActifs = settings.tempsActifs.filter((x) => x !== t);
-        }
-        saveP(LS_KEYS.settings, settings);
-        fillSelects();
-        ensureLibreSelectionValid();
+      input.onchange = (e) => {
         if (e.target.checked) {
           if (!stagedSettings.tempsActifs.includes(t)) stagedSettings.tempsActifs.push(t);
         } else {
@@ -516,8 +583,7 @@
 
   function updateDashboard() {
     const pool = buildPool();
-    const today = todayStr();
-    const dues = pool.filter((x) => x.due && getNode(x.k).due <= today);
+    const dues = pool.filter((x) => x.due);
 
     $id('dueCount').textContent = dues.length + ' cartes';
     const dueList = $id('dueList');
@@ -532,12 +598,20 @@
     $id('lastScore').textContent = last ? `${last.score}/${last.total}` : '—';
     const le = $id('lastErrors');
     le.innerHTML = '';
-    if (last && last.errors?.length) {
-      last.errors.slice(0, 5).forEach((e) => {
+    const history = loadP(LS_KEYS.history, []);
+    if (history.length) {
+      history.slice(0, 5).forEach((s) => {
         const div = document.createElement('div');
-        div.textContent = `${e.sujet} ${e.verbe} (${e.temps}) → ${e.correct}`;
+        const date = new Date(s.when);
+        const dstr = date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' });
+        const errCount = s.errors?.length || 0;
+        div.textContent = `${dstr} — ${s.score}/${s.total} (${errCount} erreur${
+          errCount > 1 ? 's' : ''
+        })`;
         le.appendChild(div);
       });
+    } else {
+      le.textContent = 'Aucune session enregistrée.';
     }
     renderBadges();
   }
@@ -578,7 +652,18 @@
    * ========================= */
   let quizState = null;
 
-  function nextQuestion(pool) {
+  function pickFromPool(pool, excludeKey) {
+    if (!excludeKey) return pool;
+    const filtered = pool.filter((x) => x.k !== excludeKey);
+    return filtered.length ? filtered : pool;
+  }
+
+  function nextQuestion(pool, excludeKey = null) {
+    if (!quizState || quizState.finished) return;
+    if (!pool || pool.length === 0) {
+      endQuiz();
+      return;
+    }
     quizState.n++;
     if (quizState.n > quizState.total) {
       endQuiz();
@@ -586,16 +671,15 @@
     }
     setProgress((quizState.n - 1) / quizState.total);
 
-    const duePool = pool.filter((x) => getNode(x.k).due <= todayStr());
-    const altPool = pool.filter((x) => getNode(x.k).weight >= 3);
-    const pickFrom =
-      Math.random() < 0.7 && duePool.length ? duePool : altPool.length ? altPool : pool;
-    const item = weightedPick(pickFrom);
+    const safePool = pickFromPool(pool, excludeKey);
+    const item = weightedPick(safePool);
 
     quizState.current = item;
+    quizState.lastKey = item.k;
     qSujet.textContent = item.p.label;
     qVerbe.textContent = item.v;
     qTemps.textContent = item.t;
+    qSujetLeft.textContent = masculineSubject(item.p);
     qInput.value = '';
     qFeedback.textContent = '';
     qInput.focus();
@@ -604,10 +688,12 @@
   }
 
   function validateCurrent() {
+    if (!quizState || quizState.finished || !quizState.current) return;
     const it = quizState.current;
-    const correct = renderTargetForm(it.p, it.v, it.t);
+    const correctVerb = getVerbFormOnly(it.v, it.t, it.p.code);
+    const correctFull = renderTargetForm(it.p, it.v, it.t);
     const answer = qInput.value.trim().toLowerCase();
-    const ok = normalize(answer) === normalize(correct);
+    const ok = normalize(answer) === normalize(correctVerb);
 
     updateOnAnswer(it.k, ok);
 
@@ -616,30 +702,52 @@
       qFeedback.textContent = '✔ Bravo !';
       quizState.score++;
       qNext.style.display = 'none';
-      setTimeout(() => nextQuestion(buildPool().filter((x) => CONJ[x.v] && CONJ[x.v][x.t])), 600);
+      if (quizState.timerId) clearTimeout(quizState.timerId);
+      quizState.timerId = setTimeout(
+        () => nextQuestion(buildPool().filter((x) => CONJ[x.v] && CONJ[x.v][x.t])),
+        600
+      );
     } else {
       qFeedback.className = 'feedback ko';
-      qFeedback.innerHTML = `✘ Oups. ${highlight(answer, correct)} → <b>${correct}</b>`;
-      quizState.errors.push({ sujet: it.p.label, verbe: it.v, temps: it.t, correct });
+      qFeedback.innerHTML = `✘ Oups. ${highlight(answer, correctVerb)} → <b>${escapeHTML(
+        correctFull
+      )}</b>`;
+      quizState.errors.push({ sujet: it.p.label, verbe: it.v, temps: it.t, correct: correctFull });
       qNext.style.display = 'inline-block';
       qNext.onclick = () => {
         qNext.style.display = 'none';
-        nextQuestion(buildPool().filter((x) => CONJ[x.v] && CONJ[x.v][x.t]));
+        nextQuestion(buildPool().filter((x) => CONJ[x.v] && CONJ[x.v][x.t]), it.k);
       };
     }
     saveP(LS_KEYS.progress, progress);
   }
 
   function endQuiz() {
+    if (!quizState || quizState.finished) return;
+    quizState.finished = true;
+    if (quizState.timerId) clearTimeout(quizState.timerId);
     setProgress(1);
     qFeedback.className = 'feedback';
     qFeedback.innerHTML = `Session terminée — score <b>${quizState.score}/${quizState.total}</b>`;
+    qNext.style.display = 'none';
+    qInput.disabled = true;
+    qSubmit.disabled = true;
+    startQuizBtn.style.display = 'inline-block';
+    startQuizBtn.textContent = 'Redémarrer';
     saveP(LS_KEYS.last, {
       score: quizState.score,
       total: quizState.total,
       when: nowISO(),
       errors: quizState.errors,
     });
+    const history = loadP(LS_KEYS.history, []);
+    history.unshift({
+      score: quizState.score,
+      total: quizState.total,
+      when: nowISO(),
+      errors: quizState.errors,
+    });
+    saveP(LS_KEYS.history, history.slice(0, 20));
 
     if (quizState.score === quizState.total) awardBadge('perfect');
 
@@ -698,9 +806,24 @@
       streak3: '📆 Série 3 jours',
       ontime: '⚡ Révision à l’heure',
     };
+    const tips = {
+      perfect: 'Une session parfaite (score maximal).',
+      streak3: 'Au moins une session 3 jours d’affilée.',
+      ontime: 'Session terminée alors que des cartes étaient dues.',
+    };
     const have = getBadges();
     el.innerHTML = have.length
-      ? have.map((k) => `<li>${map[k] || k}</li>`).join('')
+      ? have
+          .map(
+            (k) =>
+              `<li>
+                <button class="badge-btn" type="button" aria-expanded="false">${
+                  map[k] || k
+                }</button>
+                <span class="badge-tip" role="status">${escapeHTML(tips[k] || '')}</span>
+              </li>`
+          )
+          .join('')
       : '<li>Aucun badge pour le moment</li>';
   }
 
@@ -712,8 +835,8 @@
     return PERSONNES.find((x) => x.code === code)?.label || code;
   }
 
-  function attemptsForKey(k, days = null, createIfMissing = true) {
-    const n = createIfMissing ? getNode(k) : peekNode(k);
+  function attemptsForKey(k, days = null, createIfMissing = false) {
+    const n = createIfMissing ? ensureNode(k) : readNode(k);
     const hist = n?.history || [];
     let arr = hist;
     if (days) {
@@ -819,11 +942,12 @@
   }
 
   function rowHTML(label, rate, attempts) {
+    const safeLabel = escapeHTML(label);
     const w = rate == null ? 0 : Math.max(0, Math.min(100, Math.round(rate * 100)));
     const color = rateColor(rate);
     return `
       <div class="row-line">
-        <div><span class="tag">${label}</span></div>
+        <div><span class="tag">${safeLabel}</span></div>
         <div>${pct(rate)}</div>
         <div class="meter" title="${attempts} essais">
           <span style="width:${w}%;background:${color}"></span>
@@ -832,11 +956,12 @@
       </div>`;
   }
   function rowDetailHTML(label, succ, fail, attempts, rate) {
+    const safeLabel = escapeHTML(label);
     const w = rate == null ? 0 : Math.max(0, Math.min(100, Math.round(rate * 100)));
     const color = rateColor(rate);
     return `
       <div class="row-detail">
-        <div><span class="tag">${label}</span></div>
+        <div><span class="tag">${safeLabel}</span></div>
         <div class="count-ok">${succ}</div>
         <div class="count-ko">${fail}</div>
         <div>${attempts}</div>
@@ -869,19 +994,27 @@
       ? a.mastered
           .map((x) => rowHTML(`${x.v} — ${x.t} — ${labelFromCode(x.code)}`, x.rate, x.attempts))
           .join('')
-      : `<div class="row-line"><div>Pas encore de cartes “maîtrisées” — ça s’en vient !</div></div>`;
+      : [
+          '<div class="row-line"><div>',
+          'Pas encore de cartes “maîtrisées” — ça s’en vient !',
+          '</div></div>',
+        ].join('');
 
     const ovEl = $id('rOverview');
     const anyVerbData = a.byVerb.some((v) => v.attempts > 0);
     ovEl.innerHTML = anyVerbData
       ? a.byVerb.map((v) => rowHTML(v.verb, v.rate, v.attempts)).join('')
-      : `<div class="row-line"><div>Aucune donnée — lance un quiz pour remplir le rapport.</div></div>`;
+      : [
+          '<div class="row-line"><div>',
+          'Aucune donnée — lance un quiz pour remplir le rapport.',
+          '</div></div>',
+        ].join('');
   }
 
   function renderDetails(includeZeros) {
     const keys = includeZeros ? enumerateAllActiveKeys() : Object.keys(progress || {});
     const rows = keys.map((k) => {
-      const a = attemptsForKey(k, null, /*createIfMissing*/ !includeZeros);
+      const a = attemptsForKey(k, null, /*createIfMissing*/ false);
       const d = parseKey(k);
       const label = `${d.v} — ${d.t} — ${labelFromCode(d.code)}`;
       return { label, ...a, key: k };
@@ -911,8 +1044,13 @@
     const byId = Object.fromEntries(PRESETS.map((p) => [p.id, p]));
     const seen = new Set();
     function rec(curId) {
-      if (!curId || !byId[curId]) return { verbes: [], temps: [], questionsParSession: 10 };
-      if (seen.has(curId)) return { verbes: [], temps: [], questionsParSession: 10 }; // éviter cycles
+      if (!curId || !byId[curId]) {
+        return { verbes: [], temps: [], questionsParSession: 10 };
+      }
+      if (seen.has(curId)) {
+        // éviter cycles
+        return { verbes: [], temps: [], questionsParSession: 10 };
+      }
       seen.add(curId);
       const p = byId[curId];
       const base = p.extends ? rec(p.extends) : { verbes: [], temps: [], questionsParSession: 10 };
@@ -952,6 +1090,12 @@
     return `${sujet} ${forme}`.trim();
   }
 
+  function masculineSubject(p) {
+    if (p.code === '3s') return 'il';
+    if (p.code === '3p') return 'ils';
+    return p.sujet || '';
+  }
+
   function normalize(s) {
     return s
       .replaceAll('’', "'")
@@ -961,6 +1105,27 @@
       .toLowerCase();
   }
 
+  const ESCAPE_HTML_RE = /[&<>"']/g;
+  function escapeHTML(str) {
+    if (!str) return '';
+    return str.replace(ESCAPE_HTML_RE, (ch) => {
+      switch (ch) {
+        case '&':
+          return '&amp;';
+        case '<':
+          return '&lt;';
+        case '>':
+          return '&gt;';
+        case '"':
+          return '&quot;';
+        case "'":
+          return '&#39;';
+        default:
+          return ch;
+      }
+    });
+  }
+
   function highlight(given, correct) {
     given = given || '';
     const g = given.split('');
@@ -968,12 +1133,14 @@
     let out = '';
     const len = Math.max(g.length, c.length);
     for (let i = 0; i < len; i++) {
-      const a = g[i] ?? '',
-        b = c[i] ?? '';
+      const a = g[i] ?? '';
+      const b = c[i] ?? '';
       out +=
         a === b
-          ? a
-          : `<span style="background:#3f1d1d;border-radius:4px;padding:0 2px">${a || '•'}</span>`;
+          ? escapeHTML(a)
+          : `<span style="background:#3f1d1d;border-radius:4px;padding:0 2px">${escapeHTML(
+              a || '•'
+            )}</span>`;
     }
     return out || '—';
   }

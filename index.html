@@ -17,20 +17,21 @@
     </header>
 
     <main class="container">
-      <nav class="tabs">
-        <button class="tab active" data-tab="dashboard">Tableau de bord</button>
-        <button class="tab" data-tab="quiz">Quiz adaptatif</button>
-        <button class="tab" data-tab="libre">Mode libre</button>
-        <button class="tab" data-tab="rapport">Rapport</button>
-        <button class="tab" data-tab="reglages">Réglages</button>
-        <button class="tab" data-tab="aide">À propos / Aide</button>
+      <nav class="tabs" role="tablist" aria-label="Sections">
+        <button class="tab active" id="tab-dashboard" data-tab="dashboard" role="tab" aria-controls="dashboard">Tableau de bord</button>
+        <button class="tab" id="tab-quiz" data-tab="quiz" role="tab" aria-controls="quiz">Quiz adaptatif</button>
+        <button class="tab" id="tab-libre" data-tab="libre" role="tab" aria-controls="libre">Mode libre</button>
+        <button class="tab" id="tab-rapport" data-tab="rapport" role="tab" aria-controls="rapport">Rapport</button>
+        <button class="tab" id="tab-reglages" data-tab="reglages" role="tab" aria-controls="reglages">Réglages</button>
+        <button class="tab" id="tab-aide" data-tab="aide" role="tab" aria-controls="aide">À propos / Aide</button>
       </nav>
 
-      <section id="dashboard" class="tab-panel active">
+      <section id="dashboard" class="tab-panel active" role="tabpanel" aria-labelledby="tab-dashboard">
         <div class="cards">
           <div class="card">
             <h2>À réviser aujourd’hui</h2>
             <p id="dueCount">—</p>
+            <p class="subtext">Basé sur tes erreurs récentes et la révision espacée.</p>
             <div id="dueList"></div>
           </div>
           <div class="card">
@@ -47,7 +48,7 @@
         </div>
       </section>
 
-      <section id="quiz" class="tab-panel">
+      <section id="quiz" class="tab-panel" role="tabpanel" aria-labelledby="tab-quiz">
         <div class="panel">
           <div class="row">
             <div class="grow">
@@ -68,8 +69,11 @@
                 <span id="qTemps" class="pill"></span>
               </div>
               <label for="qInput">Ta réponse :</label>
-              <input id="qInput" type="text" autocomplete="off" placeholder="sujet verbe" />
-              <button id="qSubmit" class="btn primary">Valider</button>
+              <div class="answer-row">
+                <span id="qSujetLeft" class="subject-left"></span>
+                <input id="qInput" type="text" autocomplete="off" placeholder="verbe" />
+                <button id="qSubmit" class="btn primary">Valider</button>
+              </div>
               <button id="qNext" class="btn" style="display: none">J’ai compris / Suivant</button>
               <div id="qFeedback" class="feedback" role="status" aria-live="polite"></div>
             </div>
@@ -77,7 +81,7 @@
         </div>
       </section>
 
-      <section id="libre" class="tab-panel">
+      <section id="libre" class="tab-panel" role="tabpanel" aria-labelledby="tab-libre">
         <div class="panel">
           <h2>Mode libre</h2>
           <div class="row wrap gap">
@@ -116,7 +120,7 @@
         </div>
       </section>
 
-      <section id="rapport" class="tab-panel">
+      <section id="rapport" class="tab-panel" role="tabpanel" aria-labelledby="tab-rapport">
         <div class="panel">
           <h2>Rapport</h2>
 
@@ -182,7 +186,7 @@
         </div>
       </section>
 
-      <section id="reglages" class="tab-panel">
+      <section id="reglages" class="tab-panel" role="tabpanel" aria-labelledby="tab-reglages">
         <div class="panel">
           <h2>Réglages</h2>
           <div class="row gap" style="align-items: center; margin-bottom: 8px">
@@ -218,7 +222,7 @@
         </div>
       </section>
 
-      <section id="aide" class="tab-panel">
+      <section id="aide" class="tab-panel" role="tabpanel" aria-labelledby="tab-aide">
         <div class="panel help">
           <h2>Guide de l’application</h2>
           <p class="sub">Pour les enfants (10–11 ans) et les adultes qui suivent la progression.</p>

@@ -1,5 +1,62 @@
 [
   {
+    "id": "1e-base",
+    "label": "1re – Base (présent, verbes usuels)",
+    "verbes": [
+      "aimer",
+      "aller",
+      "avoir",
+      "dire",
+      "être",
+      "faire"
+    ],
+    "temps": [
+      "présent"
+    ],
+    "questionsParSession": 8
+  },
+  {
+    "id": "2e-base",
+    "label": "2e – Consolidation (présent, verbes usuels)",
+    "extends": "1e-base",
+    "questionsParSession": 8
+  },
+  {
+    "id": "3e-phase-1",
+    "label": "3e – Phase 1 (présent + imparfait, verbes usuels + -er)",
+    "verbes": [
+      "aimer",
+      "aller",
+      "avoir",
+      "dire",
+      "être",
+      "faire",
+      "manger",
+      "commencer"
+    ],
+    "temps": [
+      "présent",
+      "imparfait"
+    ],
+    "questionsParSession": 10
+  },
+  {
+    "id": "3e-phase-2",
+    "label": "3e – Phase 2 (ajout futur simple)",
+    "extends": "3e-phase-1",
+    "add_temps": [
+      "futur simple"
+    ]
+  },
+  {
+    "id": "4e-base",
+    "label": "4e – Base (présent, imparfait, futur, conditionnel)",
+    "extends": "3e-phase-2",
+    "add_temps": [
+      "conditionnel présent"
+    ]
+  },
+  {
     "id": "5e-phase-1",
     "label": "5e – Phase 1 (Présent + Imparfait, 10 verbes)",
     "verbes": [
@@ -34,6 +91,33 @@
     "extends": "5e-phase-2",
     "add_temps": [
       "conditionnel présent"
+    ]
+  },
+  {
+    "id": "5e-phase-4",
+    "label": "5e – Phase 4 (ajout passé composé)",
+    "extends": "5e-phase-3",
+    "add_temps": [
+      "passé composé"
+    ]
+  },
+  {
+    "id": "6e-base",
+    "label": "6e – Base (ajout verbes irréguliers + passé simple)",
+    "extends": "5e-phase-4",
+    "add_verbes": [
+      "devoir",
+      "pouvoir",
+      "savoir",
+      "voir",
+      "vouloir",
+      "rendre",
+      "mettre",
+      "prendre",
+      "venir"
+    ],
+    "add_temps": [
+      "passé simple"
     ]
   },
   {

@@ -89,11 +89,42 @@ h1 {
   margin: 0;
 }
 .badges li {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.badge-btn {
   background: #0e223d;
   border: 1px solid #1f2a44;
   border-radius: 999px;
   padding: 6px 10px;
   font-size: 12px;
+  color: var(--text);
+  cursor: pointer;
+}
+.badge-tip {
+  position: absolute;
+  left: 0;
+  top: 120%;
+  background: #0a1328;
+  border: 1px solid #1f2a44;
+  border-radius: 10px;
+  padding: 8px 10px;
+  font-size: 12px;
+  color: var(--text);
+  width: max-content;
+  max-width: 220px;
+  display: none;
+  z-index: 5;
+}
+.badge-tip.show {
+  display: block;
+}
+
+.subtext {
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: -6px;
 }
 .user-box {
   display: flex;
@@ -196,6 +227,17 @@ select {
   display: flex;
   gap: 8px;
   margin-bottom: 10px;
+}
+.answer-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.subject-left {
+  min-width: 60px;
+  text-align: right;
+  color: var(--muted);
 }
 .table-like .row {
   display: grid;
