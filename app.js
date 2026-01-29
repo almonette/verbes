@@ -223,7 +223,8 @@
     qSujet,
     qVerbe,
     qTemps,
-    qSujetLeft;
+    qSujetLeft,
+    quizCountEl;
   let badgesEl;
   let generatePrintBtn, printBtn, printPreview;
   let libreVerbeSel, libreTempsSel, libreLoadBtn, libreCheckBtn;
@@ -295,6 +296,7 @@
       settings = deepClone(stagedSettings);
       saveP(LS_KEYS.settings, settings);
       stagedSettings = deepClone(settings);
+      updateQuizTitle();
       // rafraîchir les zones qui dépendent des réglages persistés
       fillSelects(); // Mode libre (utilise settings persisté)
       ensureLibreSelectionValid();
@@ -372,6 +374,7 @@
     qVerbe = $id('qVerbe');
     qTemps = $id('qTemps');
     qSujetLeft = $id('qSujetLeft');
+    quizCountEl = $id('quizCount');
     badgesEl = $id('badges');
     generatePrintBtn = $id('generatePrintQuiz');
     printBtn = $id('printQuiz');
@@ -398,11 +401,13 @@
         lastKey: null,
         timerId: null,
         finished: false,
+        locked: false,
       };
       quizBox.classList.remove('hidden');
       startQuizBtn.style.display = 'none';
       qInput.disabled = false;
       qSubmit.disabled = false;
+      qSubmit.style.display = 'inline-block';
       qNext.style.display = 'none';
       qFeedback.textContent = '';
       nextQuestion(pool);
@@ -533,6 +538,15 @@
   /* =========================
    * 6) UI — Réglages/Dashboard
    * ========================= */
+  function getQuestionsPerSession() {
+    return Math.max(5, Math.min(20, settings?.questionsParSession || 10));
+  }
+
+  function updateQuizTitle() {
+    if (!quizCountEl) return;
+    quizCountEl.textContent = String(getQuestionsPerSession());
+  }
+
   function renderSettings() {
     // --- Presets dropdown ---
     const presetSel = document.getElementById('presetSelect');
@@ -598,6 +612,7 @@
     });
 
     qCountEl.value = stagedSettings.questionsParSession ?? 10;
+    updateQuizTitle();
   }
 
   function updateDashboard() {
@@ -701,13 +716,18 @@
     qSujetLeft.textContent = masculineSubject(item.p);
     qInput.value = '';
     qFeedback.textContent = '';
+    qSubmit.style.display = 'inline-block';
+    qNext.style.display = 'none';
+    qInput.disabled = false;
+    qSubmit.disabled = false;
+    quizState.locked = false;
     qInput.focus();
 
     qSubmit.onclick = validateCurrent;
   }
 
   function validateCurrent() {
-    if (!quizState || quizState.finished || !quizState.current) return;
+    if (!quizState || quizState.finished || !quizState.current || quizState.locked) return;
     const it = quizState.current;
     const correctVerb = getVerbFormOnly(it.v, it.t, it.p.code);
     const correctFull = renderTargetForm(it.p, it.v, it.t);
@@ -715,6 +735,9 @@
     const ok = normalize(answer) === normalize(correctVerb);
 
     updateOnAnswer(it.k, ok);
+    quizState.locked = true;
+    qInput.disabled = true;
+    qSubmit.disabled = true;
 
     if (ok) {
       qFeedback.className = 'feedback ok';
@@ -732,6 +755,7 @@
         correctFull
       )}</b>`;
       quizState.errors.push({ sujet: it.p.label, verbe: it.v, temps: it.t, correct: correctFull });
+      qSubmit.style.display = 'none';
       qNext.style.display = 'inline-block';
       qNext.onclick = () => {
         qNext.style.display = 'none';

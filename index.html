@@ -53,7 +53,7 @@
         <div class="panel">
           <div class="row">
             <div class="grow">
-              <h2>Quiz (10 questions)</h2>
+              <h2>Quiz (<span id="quizCount">10</span> questions)</h2>
               <p class="sub">Questions tirées selon tes besoins (adaptatif).</p>
             </div>
             <div>
@@ -74,8 +74,8 @@
                 <span id="qSujetLeft" class="subject-left"></span>
                 <input id="qInput" type="text" autocomplete="off" placeholder="verbe" />
                 <button id="qSubmit" class="btn primary">Valider</button>
+                <button id="qNext" class="btn" style="display: none">J’ai compris / Suivant</button>
               </div>
-              <button id="qNext" class="btn" style="display: none">J’ai compris / Suivant</button>
               <div id="qFeedback" class="feedback" role="status" aria-live="polite"></div>
             </div>
           </div>
