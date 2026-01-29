@@ -225,6 +225,7 @@
     qTemps,
     qSujetLeft;
   let badgesEl;
+  let generatePrintBtn, printBtn, printPreview;
   let libreVerbeSel, libreTempsSel, libreLoadBtn, libreCheckBtn;
   let detailsToggleBound = false;
 
@@ -372,6 +373,9 @@
     qTemps = $id('qTemps');
     qSujetLeft = $id('qSujetLeft');
     badgesEl = $id('badges');
+    generatePrintBtn = $id('generatePrintQuiz');
+    printBtn = $id('printQuiz');
+    printPreview = $id('printPreview');
 
     startQuizBtn.onclick = () => {
       const pool = buildPool().filter((x) => CONJ[x.v] && CONJ[x.v][x.t]);
@@ -420,9 +424,9 @@
       if (!tip) return;
       const isOpen = tip.classList.contains('show');
       badgesEl.querySelectorAll('.badge-tip.show').forEach((t) => t.classList.remove('show'));
-      badgesEl.querySelectorAll('.badge-btn[aria-expanded="true"]').forEach((b) =>
-        b.setAttribute('aria-expanded', 'false')
-      );
+      badgesEl
+        .querySelectorAll('.badge-btn[aria-expanded="true"]')
+        .forEach((b) => b.setAttribute('aria-expanded', 'false'));
       if (!isOpen) {
         tip.classList.add('show');
         btn.setAttribute('aria-expanded', 'true');
@@ -431,11 +435,14 @@
     document.addEventListener('click', (e) => {
       if (badgesEl && !badgesEl.contains(e.target)) {
         badgesEl.querySelectorAll('.badge-tip.show').forEach((t) => t.classList.remove('show'));
-        badgesEl.querySelectorAll('.badge-btn[aria-expanded="true"]').forEach((b) =>
-          b.setAttribute('aria-expanded', 'false')
-        );
+        badgesEl
+          .querySelectorAll('.badge-btn[aria-expanded="true"]')
+          .forEach((b) => b.setAttribute('aria-expanded', 'false'));
       }
     });
+
+    generatePrintBtn?.addEventListener('click', generatePrintableQuiz);
+    printBtn?.addEventListener('click', () => window.print());
   }
 
   /* =========================
@@ -513,6 +520,16 @@
     return items[items.length - 1];
   }
 
+  function weightedPickIndex(items) {
+    const sum = items.reduce((s, it) => s + it.w, 0);
+    let r = Math.random() * sum;
+    for (let i = 0; i < items.length; i++) {
+      r -= items[i].w;
+      if (r <= 0) return i;
+    }
+    return items.length - 1;
+  }
+
   /* =========================
    * 6) UI — Réglages/Dashboard
    * ========================= */
@@ -524,7 +541,9 @@
       // options
       presetSel.innerHTML =
         `<option value="">— choisir —</option>` +
-        PRESETS.map((p) => `<option value="${escapeHTML(p.id)}">${escapeHTML(p.label)}</option>`).join('');
+        PRESETS.map(
+          (p) => `<option value="${escapeHTML(p.id)}">${escapeHTML(p.label)}</option>`
+        ).join('');
       if (prevPreset) presetSel.value = prevPreset;
       // onChange : applique à l'APERÇU (stagedSettings), sans sauvegarder
       presetSel.onchange = () => {
@@ -716,7 +735,10 @@
       qNext.style.display = 'inline-block';
       qNext.onclick = () => {
         qNext.style.display = 'none';
-        nextQuestion(buildPool().filter((x) => CONJ[x.v] && CONJ[x.v][x.t]), it.k);
+        nextQuestion(
+          buildPool().filter((x) => CONJ[x.v] && CONJ[x.v][x.t]),
+          it.k
+        );
       };
     }
     saveP(LS_KEYS.progress, progress);
@@ -1094,6 +1116,73 @@
     if (p.code === '3s') return 'il';
     if (p.code === '3p') return 'ils';
     return p.sujet || '';
+  }
+
+  function generatePrintableQuiz() {
+    if (!printPreview) return;
+    const pool = buildPool().filter((x) => CONJ[x.v] && CONJ[x.v][x.t]);
+    if (!pool.length) {
+      printPreview.innerHTML =
+        '<div class="print-page"><h3>Feuille d’exercices</h3><p>Aucun item disponible. Active des verbes et des temps dans Réglages.</p></div>';
+      return;
+    }
+
+    const count = 10;
+    const available = pool.slice();
+    const items = [];
+    for (let i = 0; i < count; i++) {
+      if (!available.length) available.push(...pool);
+      const idx = weightedPickIndex(available);
+      const it = available.splice(idx, 1)[0];
+      items.push(it);
+    }
+
+    const today = new Date().toLocaleDateString('fr-FR');
+    const header = `
+      <div class="print-meta">Nom : ____________________________________________  Date : ${today}</div>
+      <div class="print-meta">Consigne : complète chaque verbe au temps indiqué.</div>
+    `;
+
+    const questions = items
+      .map(
+        (it, i) => `
+        <div class="print-row">
+          <div>${i + 1}.</div>
+          <div>
+            <div><b>${escapeHTML(it.v)}</b> — ${escapeHTML(it.t)}</div>
+            <div class="print-subject">Sujet : ${escapeHTML(masculineSubject(it.p))}</div>
+          </div>
+          <div class="print-blank"></div>
+        </div>`
+      )
+      .join('');
+
+    const answers = items
+      .map(
+        (it, i) => `
+        <div class="print-row">
+          <div>${i + 1}.</div>
+          <div>
+            <div><b>${escapeHTML(it.v)}</b> — ${escapeHTML(it.t)}</div>
+            <div class="print-subject">Sujet : ${escapeHTML(masculineSubject(it.p))}</div>
+          </div>
+          <div class="print-answer">${escapeHTML(renderTargetForm(it.p, it.v, it.t))}</div>
+        </div>`
+      )
+      .join('');
+
+    printPreview.innerHTML = `
+      <div class="print-page">
+        <h3>Verbes — Feuille d’exercices</h3>
+        ${header}
+        <div class="print-list">${questions}</div>
+      </div>
+      <div class="print-page">
+        <h3>Verbes — Réponses</h3>
+        ${header}
+        <div class="print-list">${answers}</div>
+      </div>
+    `;
   }
 
   function normalize(s) {

@@ -23,6 +23,7 @@
         <button class="tab" id="tab-libre" data-tab="libre" role="tab" aria-controls="libre">Mode libre</button>
         <button class="tab" id="tab-rapport" data-tab="rapport" role="tab" aria-controls="rapport">Rapport</button>
         <button class="tab" id="tab-reglages" data-tab="reglages" role="tab" aria-controls="reglages">Réglages</button>
+        <button class="tab" id="tab-imprimer" data-tab="imprimer" role="tab" aria-controls="imprimer">Imprimer</button>
         <button class="tab" id="tab-aide" data-tab="aide" role="tab" aria-controls="aide">À propos / Aide</button>
       </nav>
 
@@ -219,6 +220,26 @@
             <button id="saveSettings" class="btn primary">Enregistrer</button>
             <button id="resetProgress" class="btn danger">Réinitialiser la progression</button>
           </div>
+        </div>
+      </section>
+
+      <section id="imprimer" class="tab-panel" role="tabpanel" aria-labelledby="tab-imprimer">
+        <div class="panel">
+          <div class="row">
+            <div class="grow">
+              <h2>Feuille d’exercices (impression)</h2>
+              <p class="sub">
+                Génère 10 questions selon tes réglages. Imprime la page 1 pour l’enfant, garde la
+                page 2 (réponses) pour le parent.
+              </p>
+            </div>
+            <div class="row gap">
+              <button id="generatePrintQuiz" class="btn">Générer</button>
+              <button id="printQuiz" class="btn primary">Imprimer</button>
+            </div>
+          </div>
+
+          <div id="printPreview" class="print-preview"></div>
         </div>
       </section>
 

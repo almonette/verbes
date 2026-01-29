@@ -14,7 +14,12 @@
 }
 body {
   margin: 0;
-  font-family: Inter, system-ui, Segoe UI, Roboto, Arial;
+  font-family:
+    Inter,
+    system-ui,
+    Segoe UI,
+    Roboto,
+    Arial;
   color: var(--text);
   background: linear-gradient(180deg, #0b1224, #0f172a);
 }
@@ -125,6 +130,89 @@ h1 {
   color: var(--muted);
   font-size: 12px;
   margin-top: -6px;
+}
+
+.print-preview {
+  margin-top: 12px;
+  display: grid;
+  gap: 16px;
+}
+.print-page {
+  background: #0f1a33;
+  border: 1px solid #1f2a44;
+  border-radius: 14px;
+  padding: 18px;
+}
+.print-page h3 {
+  margin: 0 0 6px;
+}
+.print-meta {
+  color: var(--muted);
+  font-size: 12px;
+  margin-bottom: 10px;
+}
+.print-list {
+  display: grid;
+  gap: 20px;
+}
+.print-row {
+  display: grid;
+  grid-template-columns: 28px 1fr 340px;
+  gap: 24px;
+  align-items: center;
+}
+.print-subject {
+  color: var(--muted);
+  font-size: 12px;
+}
+.print-blank {
+  border-bottom: 1px solid #9ca3af;
+  height: 22px;
+}
+.print-answer {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+@media print {
+  body {
+    background: #fff;
+    color: #111;
+  }
+  .app-header,
+  .app-footer,
+  .tabs,
+  .panel > .row {
+    display: none !important;
+  }
+  .container {
+    max-width: none;
+    margin: 0;
+    padding: 0;
+  }
+  .tab-panel {
+    display: none !important;
+  }
+  #imprimer.tab-panel.active {
+    display: block !important;
+  }
+  .panel,
+  .print-page {
+    border: none;
+    background: #fff;
+    border-radius: 0;
+    padding: 0;
+  }
+  .print-page {
+    page-break-after: always;
+    padding: 24px;
+  }
+  .print-row {
+    grid-template-columns: 28px 1fr 300px;
+  }
+  .print-answer {
+    color: #111;
+  }
 }
 .user-box {
   display: flex;
@@ -378,8 +466,9 @@ select {
   font-size: 12px;
 }
 .kbd {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
-    'Courier New', monospace;
+  font-family:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
+    monospace;
   font-size: 12px;
   border: 1px solid #1f2a44;
   border-bottom-width: 2px;
